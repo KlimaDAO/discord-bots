@@ -1,0 +1,4 @@
+qrcode
+discord
+discord-py-interactions
+web3

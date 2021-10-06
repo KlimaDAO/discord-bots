@@ -1,2 +1,3 @@
 # discord-bots
-Discord Bots
+
+Custom Discord Bots powering the KlimaDAO community.
