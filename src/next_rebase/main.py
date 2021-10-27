@@ -18,7 +18,7 @@ client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 # Initialize web3
 project_id = os.environ['WEB3_INFURA_PROJECT_ID']
 polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
-web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint))
+web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint, request_kwargs={'timeout': 60}))
 assert(web3.isConnected())
 
 address = Web3.toChecksumAddress("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d")
@@ -27,7 +27,12 @@ abi = json.loads('[{"inputs":[{"internalType":"address","name":"_KLIMA","type":"
 
 def get_epoch_info():
     contract_instance = web3.eth.contract(address=address, abi=abi)
-    return contract_instance.functions.epoch().call()
+    try:
+        epoch_info = contract_instance.functions.epoch().call()
+    except ValueError:
+        epoch_info = None
+
+    return epoch_info
 
 
 def get_next_rebase_secs(next_rebase_block):
@@ -36,7 +41,10 @@ def get_next_rebase_secs(next_rebase_block):
         f'https://api.polygonscan.com/api?module=block&action=getblockcountdown&blockno={next_rebase_block}&apikey={SCAN_API_KEY}'  # noqa: E501
     )
 
-    next_rebase_secs = float(json.loads(resp.content)['result']['EstimateTimeInSec'])
+    try:
+        next_rebase_secs = float(json.loads(resp.content)['result']['EstimateTimeInSec'])
+    except TypeError:
+        next_rebase_secs = None
 
     return next_rebase_secs
 
@@ -52,12 +60,19 @@ async def on_ready():
 async def update_info():
     epoch_info = get_epoch_info()
 
+    if epoch_info is None:
+        return
+
     # unpack epoch info
     next_epoch_number = epoch_info[1]
     next_rebase_block = epoch_info[2]
 
     # Datetime calculations
     next_rebase_secs = get_next_rebase_secs(next_rebase_block)
+
+    if next_rebase_secs is None:
+        return
+
     next_rebase_delta = timedelta(seconds=next_rebase_secs)
     next_rebase_datetime = datetime.utcnow() + next_rebase_delta
 
