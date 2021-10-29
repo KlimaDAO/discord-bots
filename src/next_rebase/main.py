@@ -86,6 +86,10 @@ async def update_info():
     for guild in client.guilds:
         guser = guild.get_member(client.user.id)
         await guser.edit(nick=f'Rebase In: {int(hours)}h {int(minutes)}m ')
+
+        if int(minutes) <= 1:
+            webhook = discord.Webhook.from_url(os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"], adapter=discord.RequestsWebhookAdapter())
+            webhook.send("Rebasing momentarily, @Klimates! (:deciduous_tree:, :deciduous_tree:)")
     await client.change_presence(
         activity=discord.Activity(
             type=discord.ActivityType.playing,
