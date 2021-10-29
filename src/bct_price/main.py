@@ -9,7 +9,7 @@ BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 # Initialized Discord client
 intents = discord.Intents.all()
 intents.members = True
-client = commands.Bot(intents=intents, help_command=None)
+client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 
 # Initialize web3
 project_id = os.environ['WEB3_INFURA_PROJECT_ID']
