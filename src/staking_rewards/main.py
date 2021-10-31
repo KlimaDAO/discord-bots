@@ -5,7 +5,7 @@ from web3 import Web3
 import discord
 from discord.ext import commands, tasks
 
-BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
+BOT_TOKEN = os.environ["DISCORD_STAKING_REWARD_BOT_TOKEN"]
 
 # Initialized Discord client
 intents = discord.Intents.all()
