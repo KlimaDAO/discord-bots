@@ -71,10 +71,9 @@ def get_info():
     staked_before = rebase[2]
     staked_after = rebase[3]
     diff_ratio = (abs(staked_after - staked_before) / staked_before) + 1
-    reward_rate = round((diff_ratio - 1) * 100, 2)
     yearly_roi = ((diff_ratio ** (365 * 3)) - 1) * 100
 
-    return [index, reward_rate, yearly_roi]
+    return [index, yearly_roi]
 
 
 @client.event
@@ -86,15 +85,14 @@ async def on_ready():
 
 @tasks.loop(seconds=60)
 async def update_info():
-    index, reward_rate, yearly_roi = get_info()
+    index, yearly_roi = get_info()
 
     print(f'Index: {index:,.2f} KLIMA')
-    print(f'Previous rebase reward: {reward_rate:,.2f}%')
     print(f'APY: {yearly_roi:,.2f}%')
 
     for guild in client.guilds:
         guser = guild.get_member(client.user.id)
-        await guser.edit(nick=f'{yearly_roi:,.2f}% APY | {reward_rate:,.2f}% PR')
+        await guser.edit(nick=f'{yearly_roi:,.2f}% APY')
 
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
                                                                name=f'Current Index: {index:,.4f} KLIMA'))
