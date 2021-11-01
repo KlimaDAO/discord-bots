@@ -31,12 +31,13 @@ f = open('abis/bct.json')
 BCT_ABI = json.load(f)
 f.close()
 
+
 def format_from_wei(i):
-  return 1.0*i / 10**18
+    return 1.0 * i / 10 ** 18
+
 
 def get_owned_BCT_from_sushi(address):
     sushi_LP = web3.eth.contract(address=address, abi=SUSHI_PAIR_ABI)
-    token0 = sushi_LP.functions.token0().call()
     token1 = sushi_LP.functions.token1().call()
     reserve0, reserve1, _ = sushi_LP.functions.getReserves().call()
     treasury_SLP = sushi_LP.functions.balanceOf(TREASURY_ADDRESS).call()
@@ -48,7 +49,8 @@ def get_owned_BCT_from_sushi(address):
     bct_supply = format_from_wei(reserve)
     ownership = treasury_SLP / total_SLP
     bct_owned = math.floor(bct_supply * ownership)
-    return bctOwned
+    return bct_owned
+
 
 def get_treasury_balance():
     BCT_contract = web3.eth.contract(address=BCT_ADDRESS, abi=BCT_ABI)
@@ -57,25 +59,27 @@ def get_treasury_balance():
     bct_klima = get_owned_BCT_from_sushi(KLIMA_BCT_POOL_ADDRESS)
     return raw_BCT + bct_usdc + bct_klima
 
+
 @client.event
 async def on_ready():
     print('Logged in as {0.user}'.format(client))
     if not update_info.is_running():
         update_info.start()
 
+
 @tasks.loop(seconds=300)
 async def update_info():
     try:
         bct_treasury = get_treasury_balance()
-    except:
+    except ValueError:
         bct_treasury = None
 
     if bct_treasury is not None:
         print(f'{bct_treasury:,.2f} BCT')
 
-for guild in client.guilds:
-    guser = guild.get_member(client.user.id)
-    await guser.edit(nick=f'{bct_treasury:,.2f} BCT')
-await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Toucan Protocol'))  # noqa: E501
+    for guild in client.guilds:
+        guser = guild.get_member(client.user.id)
+        await guser.edit(nick=f'{bct_treasury:,.2f} BCT')
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Toucan Protocol'))  # noqa: E501
 
 client.run(BOT_TOKEN)
