@@ -94,8 +94,12 @@ async def update_info():
         guser = guild.get_member(client.user.id)
         await guser.edit(nick=f'{yearly_roi:,.2f}% APY')
 
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing,
-                                                               name=f'Current Index: {index:,.4f} KLIMA'))
+        await client.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.playing,
+                name=f'Current Index: {index:,.4f} KLIMA'
+            )
+        )
 
 
 client.run(BOT_TOKEN)
