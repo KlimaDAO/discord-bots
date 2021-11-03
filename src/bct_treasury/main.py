@@ -18,10 +18,10 @@ polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
 web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint))
 assert(web3.isConnected())
 
-BCT_ADDRESS = Web3.toChecksumAddress("0x2f800db0fdb5223b3c3f354886d907a671414a7f")
-TREASURY_ADDRESS = Web3.toChecksumAddress("0x7Dd4f0B986F032A44F913BF92c9e8b7c17D77aD7")
-BCT_USDC_POOL_ADDRESS = Web3.toChecksumAddress("0x1e67124681b402064cd0abe8ed1b5c79d2e02f64")
-KLIMA_BCT_POOL_ADDRESS = Web3.toChecksumAddress("0x9803c7ae526049210a1725f7487af26fe2c24614")
+BCT_ADDRESS = Web3.toChecksumAddress("0x2f800db0fdb5223b3c3f354886d907a671414a7f")  # noqa: E501
+TREASURY_ADDRESS = Web3.toChecksumAddress("0x7Dd4f0B986F032A44F913BF92c9e8b7c17D77aD7")  # noqa: E501
+BCT_USDC_POOL_ADDRESS = Web3.toChecksumAddress("0x1e67124681b402064cd0abe8ed1b5c79d2e02f64")  # noqa: E501
+KLIMA_BCT_POOL_ADDRESS = Web3.toChecksumAddress("0x9803c7ae526049210a1725f7487af26fe2c24614")  # noqa: E501
 
 f = open('abis/sushi_pair.json')
 SUSHI_PAIR_ABI = json.load(f)
@@ -54,7 +54,9 @@ def get_owned_BCT_from_sushi(address):
 
 def get_treasury_balance():
     BCT_contract = web3.eth.contract(address=BCT_ADDRESS, abi=BCT_ABI)
-    raw_BCT = format_from_wei(BCT_contract.functions.balanceOf(TREASURY_ADDRESS).call())
+    raw_BCT = format_from_wei(
+        BCT_contract.functions.balanceOf(TREASURY_ADDRESS).call()
+    )
     bct_usdc = get_owned_BCT_from_sushi(BCT_USDC_POOL_ADDRESS)
     bct_klima = get_owned_BCT_from_sushi(KLIMA_BCT_POOL_ADDRESS)
     return raw_BCT + bct_usdc + bct_klima
@@ -80,6 +82,11 @@ async def update_info():
     for guild in client.guilds:
         guser = guild.get_member(client.user.id)
         await guser.edit(nick=f'{bct_treasury:,.2f} BCT')
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Toucan Protocol'))  # noqa: E501
+    await client.change_presence(
+        activity=discord.Activity(
+            type=discord.ActivityType.watching,
+            name='BCT in the Klima Treasury'
+        )
+    )
 
 client.run(BOT_TOKEN)
