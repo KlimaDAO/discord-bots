@@ -98,7 +98,7 @@ async def update_info():
                 adapter=discord.RequestsWebhookAdapter()
             )
             webhook.send(
-                "Rebasing momentarily, @Klimates! (:deciduous_tree:, :deciduous_tree:)"
+                "Rebasing momentarily! (:deciduous_tree:, :deciduous_tree:)"
             )
     await client.change_presence(
         activity=discord.Activity(
