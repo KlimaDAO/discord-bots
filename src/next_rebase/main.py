@@ -48,7 +48,7 @@ def get_next_rebase_secs(next_rebase_block):
         next_rebase_secs = float(
             json.loads(resp.content)['result']['EstimateTimeInSec']
         )
-    except TypeError:
+    except (TypeError, json.decoder.JSONDecodeError):
         next_rebase_secs = None
 
     return next_rebase_secs
