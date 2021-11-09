@@ -18,7 +18,10 @@ client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 # Initialize web3
 project_id = os.environ['WEB3_INFURA_PROJECT_ID']
 polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
-web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint, request_kwargs={'timeout': 60}))
+web3 = Web3(Web3.HTTPProvider(
+    polygon_mainnet_endpoint,
+    request_kwargs={'timeout': 60})
+)
 assert(web3.isConnected())
 
 address = Web3.toChecksumAddress("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d")
@@ -42,7 +45,9 @@ def get_next_rebase_secs(next_rebase_block):
     )
 
     try:
-        next_rebase_secs = float(json.loads(resp.content)['result']['EstimateTimeInSec'])
+        next_rebase_secs = float(
+            json.loads(resp.content)['result']['EstimateTimeInSec']
+        )
     except (TypeError, json.decoder.JSONDecodeError):
         next_rebase_secs = None
 
@@ -86,6 +91,15 @@ async def update_info():
     for guild in client.guilds:
         guser = guild.get_member(client.user.id)
         await guser.edit(nick=f'Rebase In: {int(hours)}h {int(minutes)}m ')
+
+        if int(minutes) <= 1:
+            webhook = discord.Webhook.from_url(
+                os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"],
+                adapter=discord.RequestsWebhookAdapter()
+            )
+            webhook.send(
+                "Rebasing momentarily! (:deciduous_tree:, :deciduous_tree:)"
+            )
     await client.change_presence(
         activity=discord.Activity(
             type=discord.ActivityType.playing,
