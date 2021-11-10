@@ -92,7 +92,7 @@ async def update_info():
         guser = guild.get_member(client.user.id)
         await guser.edit(nick=f'Rebase In: {int(hours)}h {int(minutes)}m ')
 
-        if int(minutes) <= 1:
+        if next_rebase_secs <= 60:
             webhook = discord.Webhook.from_url(
                 os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"],
                 adapter=discord.RequestsWebhookAdapter()
