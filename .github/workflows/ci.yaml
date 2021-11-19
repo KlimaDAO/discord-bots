@@ -20,3 +20,6 @@ jobs:
           # exclude: "src/ignoreme.py"
           max-line-length: "120"
           path: "src"
+# Use docker image
+# Restrict deployment to master branch
+# Deploy to DOAP
