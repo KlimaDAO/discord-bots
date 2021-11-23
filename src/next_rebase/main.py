@@ -10,6 +10,8 @@ from web3 import Web3
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN_REBASE"]
 SCAN_API_KEY = os.environ['POLYGONSCAN_API_KEY']
 
+REBASER_ROLE_ID = '912771496122916905'
+
 # Initialized Discord client
 intents = discord.Intents.default()
 intents.members = True  # Subscribe to the privileged members intent.
@@ -98,7 +100,7 @@ async def update_info():
                 adapter=discord.RequestsWebhookAdapter()
             )
             webhook.send(
-                "Rebasing momentarily! (:deciduous_tree:, :deciduous_tree:)"
+                f"Rebasing momentarily! <@&{REBASER_ROLE_ID}> (:deciduous_tree:, :deciduous_tree:)"
             )
     await client.change_presence(
         activity=discord.Activity(
