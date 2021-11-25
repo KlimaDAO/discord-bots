@@ -51,7 +51,7 @@ jobs:
       - name: Check out source repository
         uses: actions/checkout@v2
       - name: Install doctl
-        run: snap install doctl
+        run: sudo snap install doctl
       - name: Create app
         run: doctl apps create --upsert --spec app-spec.yml
       - name: Deploy app
