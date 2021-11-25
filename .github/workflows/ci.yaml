@@ -44,7 +44,8 @@ jobs:
           cache-to: type=gha
   deploy-bct:
     runs-on: ubuntu-latest
-    container: 0xjem/discord-bots:latest
+    container: 
+      image: 0xjem/discord-bots:latest
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
