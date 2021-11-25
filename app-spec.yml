@@ -35,7 +35,7 @@ workers:
     source_dir: /
     image:
       registry_type: DOCKER_HUB
-      registry: docker.io
+      registry: hub.docker.com
       repository: 0xjem/discord-bots
   - name: klima-price
     environment_slug: python
@@ -50,7 +50,7 @@ workers:
     source_dir: /
     image:
       registry_type: DOCKER_HUB
-      registry: docker.io
+      registry: hub.docker.com
       repository: 0xjem/discord-bots
   - name: bct-price
     environment_slug: python
@@ -65,5 +65,5 @@ workers:
     source_dir: /
     image:
       registry_type: DOCKER_HUB
-      registry: docker.io
+      registry: hub.docker.com
       repository: 0xjem/discord-bots
