@@ -1,0 +1,69 @@
+name: discord-bots
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+envs:
+  - key: POLYGONSCAN_API_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: "CHANGEME"
+  - key: WEB3_INFURA_PROJECT_ID
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: "CHANGEME"
+region: nyc
+workers:
+  - alerts:
+      - operator: GREATER_THAN
+        rule: RESTART_COUNT
+        value: 5
+        window: ONE_HOUR
+  - name: next-rebase
+    environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN_REBASE
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: "CHANGEME"
+      - key: DISCORD_REBASE_BOT_WEBHOOK_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: "CHANGEME"
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: python src/next_rebase/main.py
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: 0xjem/discord-bots
+  - name: klima-price
+    environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: "CHANGEME"
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: python src/klima_price/main.py
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: 0xjem/discord-bots
+  - name: bct-price
+    environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: "CHANGEME"
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: python src/bct_price/main.py
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: 0xjem/discord-bots

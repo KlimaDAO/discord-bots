@@ -47,3 +47,6 @@ Next Rebase:
 - `DISCORD_BOT_TOKEN_REBASE`
 - `POLYGONSCAN_API_KEY`
 - `WEB3_INFURA_PROJECT_ID`
+
+TODO environment variables needed
+TODO deployment process
