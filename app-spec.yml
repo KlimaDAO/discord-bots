@@ -37,6 +37,7 @@ workers:
       registry_type: DOCKER_HUB
       registry: hub.docker.com
       repository: 0xjem/discord-bots
+      tag: latest
   - name: klima-price
     environment_slug: python
     envs:
@@ -52,6 +53,7 @@ workers:
       registry_type: DOCKER_HUB
       registry: hub.docker.com
       repository: 0xjem/discord-bots
+      tag: latest
   - name: bct-price
     environment_slug: python
     envs:
@@ -67,3 +69,4 @@ workers:
       registry_type: DOCKER_HUB
       registry: hub.docker.com
       repository: 0xjem/discord-bots
+      tag: latest
