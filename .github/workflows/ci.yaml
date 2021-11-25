@@ -34,12 +34,12 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false
-          tags: discord-bots:latest
+          tags: 0xjem/discord-bots:latest
           cache-from: type=gha
           cache-to: type=gha
   deploy-bct:
     runs-on: ubuntu-latest
-    container: discord-bots:latest
+    container: 0xjem/discord-bots:latest
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
