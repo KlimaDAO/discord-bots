@@ -56,3 +56,5 @@ jobs:
         run: doctl apps create --upsert --spec app-spec.yml
       - name: Deploy app
         run: doctl apps create-deployment discord-bots
+    env:
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
