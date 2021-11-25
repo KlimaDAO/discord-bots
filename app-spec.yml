@@ -13,11 +13,11 @@ envs:
     value: "CHANGEME"
 region: nyc
 workers:
-  - alerts:
-      - operator: GREATER_THAN
-        rule: RESTART_COUNT
-        value: 5
-        window: ONE_HOUR
+  # - alerts:
+  #     - operator: GREATER_THAN
+  #       rule: RESTART_COUNT
+  #       value: 5
+  #       window: ONE_HOUR
   - name: next-rebase
     environment_slug: python
     envs:
