@@ -56,6 +56,6 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Create app
-        run: doctl apps create --upsert --spec app-spec.yml
+        run: doctl apps create --upsert --spec app-spec.yml --verbose
       - name: Deploy app
         run: doctl apps create-deployment discord-bots
