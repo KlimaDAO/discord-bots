@@ -3,6 +3,7 @@ alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
 # TODO set secrets
+# TODO add health check
 envs:
   - key: POLYGONSCAN_API_KEY
     scope: RUN_AND_BUILD_TIME
