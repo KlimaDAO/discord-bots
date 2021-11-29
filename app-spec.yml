@@ -35,7 +35,7 @@ workers:
     source_dir: /
     image:
       registry_type: DOCR
-      repository: jem-klima/discord-bots
+      repository: discord-bots
       tag: latest
   - name: klima-price
     environment_slug: python
@@ -50,7 +50,7 @@ workers:
     source_dir: /
     image:
       registry_type: DOCR
-      repository: jem-klima/discord-bots
+      repository: discord-bots
       tag: latest
   - name: bct-price
     environment_slug: python
@@ -65,5 +65,5 @@ workers:
     source_dir: /
     image:
       registry_type: DOCR
-      repository: jem-klima/discord-bots
+      repository: discord-bots
       tag: latest
