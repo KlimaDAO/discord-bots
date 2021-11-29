@@ -34,9 +34,8 @@ workers:
     run_command: python src/next_rebase/main.py
     source_dir: /
     image:
-      registry_type: DOCKER_HUB
-      registry: hub.docker.com
-      repository: 0xjem/discord-bots
+      registry_type: DOCR
+      repository: jem-klima/discord-bots
       tag: latest
   - name: klima-price
     environment_slug: python
@@ -50,9 +49,8 @@ workers:
     run_command: python src/klima_price/main.py
     source_dir: /
     image:
-      registry_type: DOCKER_HUB
-      registry: hub.docker.com
-      repository: 0xjem/discord-bots
+      registry_type: DOCR
+      repository: jem-klima/discord-bots
       tag: latest
   - name: bct-price
     environment_slug: python
@@ -66,7 +64,6 @@ workers:
     run_command: python src/bct_price/main.py
     source_dir: /
     image:
-      registry_type: DOCKER_HUB
-      registry: hub.docker.com
-      repository: 0xjem/discord-bots
+      registry_type: DOCR
+      repository: jem-klima/discord-bots
       tag: latest
