@@ -56,6 +56,6 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Create app
-        run: doctl apps create --upsert --spec app-spec.yml --verbose
+        run: doctl apps create --upsert --spec app-spec.yml --wait --verbose
       - name: Deploy app
-        run: doctl apps create-deployment 5f12ab59-a5c8-43e9-b235-876e8bce6d7f
+        run: doctl apps create-deployment 5f12ab59-a5c8-43e9-b235-876e8bce6d7f --wait
