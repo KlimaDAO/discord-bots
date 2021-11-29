@@ -34,6 +34,13 @@ last_rebase_warning = 0
 last_rebase_alert = 0
 
 
+def get_webhook():
+    return discord.Webhook.from_url(
+        os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"],
+        adapter=discord.RequestsWebhookAdapter()
+    )
+
+
 def get_epoch_info():
     contract_instance = web3.eth.contract(address=address, abi=abi)
     try:
@@ -101,10 +108,7 @@ async def update_info():
     warning_secs = warning_mins * 60
     if next_rebase_secs <= warning_secs and time() - last_rebase_warning > warning_secs + 30:
         last_rebase_warning = time()
-        webhook = discord.Webhook.from_url(
-            os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"],
-            adapter=discord.RequestsWebhookAdapter()
-        )
+        webhook = get_webhook()
         webhook.send(
             f"Rebase imminent in approximately {warning_mins} minutes <@&{REBASER_ROLE_ID}>"
         )
@@ -112,17 +116,17 @@ async def update_info():
     # More than 120s since the last rebase alert
     if next_rebase_secs <= 90 and time() - last_rebase_alert > 120:
         last_rebase_alert = time()
-        webhook = discord.Webhook.from_url(
-            os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"],
-            adapter=discord.RequestsWebhookAdapter()
-        )
+        webhook = get_webhook()
         webhook.send(
             f"Rebasing momentarily! <@&{REBASER_ROLE_ID}> (:deciduous_tree:, :deciduous_tree:)"
         )
 
     for guild in client.guilds:
         guser = guild.get_member(client.user.id)
-        await guser.edit(nick=f'Rebase In: {int(hours)}h {int(minutes)}m ')
+        try:
+            await guser.edit(nick=f'Rebase In: {int(hours)}h {int(minutes)}m ')
+        except discord.errors.HTTPException:
+            return
 
     await client.change_presence(
         activity=discord.Activity(
