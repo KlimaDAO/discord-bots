@@ -48,8 +48,20 @@ async def update_info():
 
         for guild in client.guilds:
             guser = guild.get_member(client.user.id)
-            await guser.edit(nick=f'${price:,.2f} BCT')
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Toucan Protocol'))  # noqa: E501
+            try:
+                await guser.edit(nick=f'${price:,.2f} BCT')
+            except discord.errors.HTTPException:
+                return
+
+        try:
+            await client.change_presence(
+                activity=discord.Activity(
+                    type=discord.ActivityType.watching,
+                    name='Toucan Protocol'
+                )
+            )
+        except discord.errors.HTTPException:
+            return
 
 
 client.run(BOT_TOKEN)

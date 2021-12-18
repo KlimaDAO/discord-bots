@@ -76,10 +76,21 @@ async def update_info():
 
         for guild in client.guilds:
             guser = guild.get_member(client.user.id)
-            await guser.edit(nick=f'${price:,.2f} KLIMA')
+            try:
+                await guser.edit(nick=f'${price:,.2f} KLIMA')
+            except discord.errors.HTTPException:
+                return
 
         if supply is not None:
-            await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name=f'Marketcap: ${price*supply/1e6:,.1f}M'))  # noqa: E501
+            try:
+                await client.change_presence(
+                    activity=discord.Activity(
+                        type=discord.ActivityType.playing,
+                        name=f'Marketcap: ${price*supply/1e6:,.1f}M'
+                    )
+                )
+            except discord.errors.HTTPException:
+                return
 
 
 client.run(BOT_TOKEN)
