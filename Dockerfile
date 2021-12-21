@@ -1,7 +1,12 @@
-FROM python:3.8
+FROM python:3.8-slim
 
+# Install dependencies and do cleanup to save space
 RUN apt-get update && \
-    apt-get install -y make
+    apt-get install -y \
+    make \
+    gcc \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /opt
 
