@@ -6,4 +6,4 @@ build:
 	docker build -t $(DOCKER_USER)/$(DOCKER_IMAGE):$(DOCKER_TAG) .
 
 shell: build
-	docker run -it $(DOCKER_USER)/$(DOCKER_IMAGE):$(DOCKER_TAG) /bin/bash
+	docker run -it --rm $(DOCKER_USER)/$(DOCKER_IMAGE):$(DOCKER_TAG) /bin/bash
