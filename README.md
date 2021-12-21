@@ -23,8 +23,10 @@ src/
 This project requires some API keys to run. When developing locally, you can create your own API keys from the following services:
 
 - Infura: create a new project - https://infura.io/dashboard
+  - Note that you need to enable the Polygon add-on: https://infura.io/payment?chosenAddon=ethereum_polygon_addon
 - PolygonScan: create an account - https://polygonscan.com/myapikey
 - Discord token: https://discord.com/developers/applications
+  - Settings -> Bot
 - Discord webhook URL: create a personal server, channel settings -> integrations, create webhook
 
 ## Deployment

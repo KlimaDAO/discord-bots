@@ -2,17 +2,7 @@ name: discord-bots
 alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
-# TODO set secrets
 # TODO add health check
-envs:
-  - key: POLYGONSCAN_API_KEY
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-    value: "CHANGEME"
-  - key: WEB3_INFURA_PROJECT_ID
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-    value: "CHANGEME"
 region: nyc
 workers:
   # - alerts:
@@ -22,15 +12,6 @@ workers:
   #       window: ONE_HOUR
   - name: next-rebase
     environment_slug: python
-    envs:
-      - key: DISCORD_BOT_TOKEN_REBASE
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: "CHANGEME"
-      - key: DISCORD_REBASE_BOT_WEBHOOK_URL
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: "CHANGEME"
     instance_count: 1
     instance_size_slug: basic-xxs
     run_command: python src/next_rebase/main.py
@@ -41,11 +22,6 @@ workers:
       tag: latest
   - name: klima-price
     environment_slug: python
-    envs:
-      - key: DISCORD_BOT_TOKEN
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: "CHANGEME"
     instance_count: 1
     instance_size_slug: basic-xxs
     run_command: python src/klima_price/main.py
@@ -56,11 +32,6 @@ workers:
       tag: latest
   - name: bct-price
     environment_slug: python
-    envs:
-      - key: DISCORD_BOT_TOKEN
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: "CHANGEME"
     instance_count: 1
     instance_size_slug: basic-xxs
     run_command: python src/bct_price/main.py
