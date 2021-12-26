@@ -56,26 +56,28 @@ Deployment follows this process:
 
 The following environment variables must be defined in the Digital Ocean App Platform environment:
 
-App-level:
+#### App-level
 
 - `WEB3_INFURA_PROJECT_ID`
 - `POLYGONSCAN_API_KEY`
 
-Component-level (app -> settings -> components):
+#### Component-level
 
-BCT Price:
+How to set: app -> settings -> components
 
-- `DISCORD_BOT_TOKEN`
-
-Guerilla Marketing:
+##### BCT Price
 
 - `DISCORD_BOT_TOKEN`
 
-KLIMA Price:
+##### Guerilla Marketing
 
 - `DISCORD_BOT_TOKEN`
 
-Next Rebase:
+##### KLIMA Price
+
+- `DISCORD_BOT_TOKEN`
+
+##### Next Rebase
 
 - `DISCORD_BOT_TOKEN_REBASE`
 - `DISCORD_REBASE_BOT_WEBHOOK_URL`
