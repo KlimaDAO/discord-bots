@@ -94,6 +94,6 @@ How to set: app -> settings -> components
 
 ### Persisting Environment Variables
 
-Environment variables set through the DOAP web interface will be overwritten the next time there is a deployment. For this reason, after any app- or component-level environment variable is updated, the app-spec.yml must be copied from the web interface and committed to version control. Any encrypted environment variables will also be encrypted in the copied app-spec.yml file, so there is no problem with committing to version control.
+Environment variables set through the DOAP web interface will be overwritten the next time there is a deployment. For this reason, after any app- or component-level environment variable is updated (either through the app-spec.yml or web interface), the app-spec.yml must be copied from the web interface and committed to version control. Any encrypted environment variables will also be encrypted in the copied app-spec.yml file, so there is no problem with committing to version control.
 
 To access: app -> settings -> scroll to app spec
