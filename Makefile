@@ -12,13 +12,15 @@ build:
 build_deploy:
 	docker build $(DOCKER_TARGET_DEPLOY) -t $(DOCKER_USER)/$(DOCKER_IMAGE_DEPLOY):$(DOCKER_TAG) .
 
-shell: build
-	docker run -it --rm $(DOCKER_USER)/$(DOCKER_IMAGE):$(DOCKER_TAG) /bin/bash
-
-shell_deploy: build_deploy
+shell: build_deploy
 	@[ "${DIGITALOCEAN_ACCESS_TOKEN}" ] || ( echo "DIGITALOCEAN_ACCESS_TOKEN must be set in order to deploy"; exit 1 )
 	docker run -it --rm $(DOCKER_DEPLOY_ENV) $(DOCKER_USER)/$(DOCKER_IMAGE_DEPLOY):$(DOCKER_TAG) /bin/bash
 
 deploy: build_deploy
 	@[ "${DIGITALOCEAN_ACCESS_TOKEN}" ] || ( echo "DIGITALOCEAN_ACCESS_TOKEN must be set in order to deploy"; exit 1 )
-	docker run -it --rm $(DOCKER_DEPLOY_ENV) $(DOCKER_USER)/$(DOCKER_IMAGE_DEPLOY):$(DOCKER_TAG) bash -c 'doctl apps create --upsert --spec app-spec.yml --wait --verbose'
+	@[ "${DIGITALOCEAN_APP_ID}" ] || ( echo "DIGITALOCEAN_APP_ID must be set in order to deploy"; exit 1 )
+	docker run -it --rm $(DOCKER_DEPLOY_ENV) $(DOCKER_USER)/$(DOCKER_IMAGE_DEPLOY):$(DOCKER_TAG) bash -c 'doctl apps update $(DIGITALOCEAN_APP_ID) --spec app-spec.yml --wait --verbose'
+
+create: build_deploy
+	@[ "${DIGITALOCEAN_ACCESS_TOKEN}" ] || ( echo "DIGITALOCEAN_ACCESS_TOKEN must be set in order to deploy"; exit 1 )
+	docker run -it --rm $(DOCKER_DEPLOY_ENV) $(DOCKER_USER)/$(DOCKER_IMAGE_DEPLOY):$(DOCKER_TAG) bash -c 'doctl apps create --spec app-spec.yml --wait --verbose'

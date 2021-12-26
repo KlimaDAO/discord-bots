@@ -57,4 +57,4 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Upsert app
-        run: doctl apps create --upsert --spec app-spec.yml --wait --verbose
+        run: doctl apps update ${{ secrets.DIGITALOCEAN_APP_ID }} --spec app-spec.yml --wait --verbose

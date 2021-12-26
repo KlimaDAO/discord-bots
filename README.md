@@ -56,38 +56,47 @@ This is automatically performed whenever there is a commit pushed to the `master
 
 To deploy manually, run:
 
-`DIGITALOCEAN_ACCESS_TOKEN=<INSERT TOKEN> make deploy`
+`DIGITALOCEAN_APP_ID=<INSERT ID> DIGITALOCEAN_ACCESS_TOKEN=<INSERT TOKEN> make deploy`
+
+Before this, the app must be created. It can be done through the DigitalOcean App Platform web interface, or through the `make create` command.
 
 ### Required Environment
+
+#### GitHub Actions
 
 The following environment variables must be defined in GitHub Actions:
 
 - `DIGITALOCEAN_ACCESS_TOKEN`
+  - Generate a personal access token at the following URL: <https://cloud.digitalocean.com/account/api/tokens>
+- `DIGITALOCEAN_APP_ID`
+  - In the Digital Ocean web interface, go to project -> apps, and copy the ID from the URL, e.g. `SOME-222-random-string` in <https://cloud.digitalocean.com/apps/SOME-222-random-string/settings>
+
+#### Digital Ocean App Platform
 
 The following environment variables must be defined in the Digital Ocean App Platform environment:
 
-#### App-level
+##### App-level
 
 - `WEB3_INFURA_PROJECT_ID`
 - `POLYGONSCAN_API_KEY`
 
-#### Component-level
+##### Component-level
 
 How to set: app -> settings -> components
 
-##### BCT Price
+BCT Price
 
 - `DISCORD_BOT_TOKEN`
 
-##### Guerilla Marketing
+Guerilla Marketing
 
 - `DISCORD_BOT_TOKEN`
 
-##### KLIMA Price
+KLIMA Price
 
 - `DISCORD_BOT_TOKEN`
 
-##### Next Rebase
+Next Rebase
 
 - `DISCORD_BOT_TOKEN_REBASE`
 - `DISCORD_REBASE_BOT_WEBHOOK_URL`
