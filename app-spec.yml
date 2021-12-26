@@ -1,42 +1,64 @@
-name: discord-bots
 alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
-# TODO add health check
+envs:
+  - key: POLYGONSCAN_API_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: EV[1:F0QoyAubbFI4TACb3D4IoBKR1ZHo3jWB:75K+7vJ5kZgBxktqtWptTDfSLwojrCB8MU9RCKfqvQRv5LwOL+z2WFmKn7c6S1EPuHc=]
+  - key: WEB3_INFURA_PROJECT_ID
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: EV[1:pgnFg6aTqC7UFtxKE5fBBUpxRjv6VAq2:yUcFSI+Rv+npOM5AtLXWRqtmFFS74OWlTokkPThM9zVWmBpfYvceMVW6BFZhEOhd]
+name: discord-bots
 region: nyc
 workers:
-  # - alerts:
-  #     - operator: GREATER_THAN
-  #       rule: RESTART_COUNT
-  #       value: 5
-  #       window: ONE_HOUR
-  - name: next-rebase
-    environment_slug: python
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN_REBASE
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: EV[1:+HPb6mLF3+3eHfcE/JVuQufwao8uesWH:0/bCZMV4zBB+VH8wAKbu/GirTyt6PWkDgEIFp6VG57G2QhjgmmR82u8D15j41nCs8NsHDjKYfsn9vC4ZGIvARxCdZFO20Y6Qsbil]
+      - key: DISCORD_REBASE_BOT_WEBHOOK_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: EV[1:vnXnulUDNW963n6+WIw+pZpfWk14HbQw:ugJL67uOm2iGaORj5/Zay9WDYLBbBjK85SVFPMvqPgmd+wP5153FtmJRSHeXwWQtQKsr83+EbeQ5cEVFw7NoDTWeu2oHfsGpWE+h4RCh5YBKyGh9zBNune9QPfgIYddbaxpHHi76fClb8fH+WKeyXZIUSkbHu/T3Ow0aQc9Ag/Yg+Bfu03Aw9w==]
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: latest
     instance_count: 1
     instance_size_slug: basic-xxs
+    name: next-rebase
     run_command: python src/next_rebase/main.py
     source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: EV[1:Cgf4PxEds43bRwHAOcn3IWAwh7dzHKVf:HJ9ze0XCxh9F3v4t1y0I0CIQ23m5h9BXpBL+Ej1M9V/QPC/U7ktC5UsBEAuCw0JNl1Y4Dvc5S3bhYdLYfCppzHkfr9BP7ahfEWPi]
     image:
       registry_type: DOCR
       repository: discord-bots
       tag: latest
-  - name: klima-price
-    environment_slug: python
     instance_count: 1
     instance_size_slug: basic-xxs
+    name: klima-price
     run_command: python src/klima_price/main.py
     source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: EV[1:S2frf02hIaTDfbCnl0h0rEmIZnQI4Kel:ruTnNGvgf9N4RZ3fworE9Etpujx4J1KgzpB5V86PyzO2XFJReZcOrJ6l4EqFav2X+mAbcNGrClGflzdPkC/644BCm1bmrngN3nes]
     image:
       registry_type: DOCR
       repository: discord-bots
       tag: latest
-  - name: bct-price
-    environment_slug: python
     instance_count: 1
     instance_size_slug: basic-xxs
+    name: bct-price
     run_command: python src/bct_price/main.py
     source_dir: /
-    image:
-      registry_type: DOCR
-      repository: discord-bots
-      tag: latest
