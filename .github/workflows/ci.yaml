@@ -1,7 +1,10 @@
 name: Continuous Integration
 
 # TODO Restrict deployment to master branch
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - docker
 
 jobs:
   flake8-lint:
@@ -17,8 +20,6 @@ jobs:
       - name: flake8 Lint
         uses: py-actions/flake8@v1
         with:
-          # ignore: "F401"
-          # exclude: "src/ignoreme.py"
           max-line-length: "120"
           path: "src"
   build-docker:
