@@ -54,6 +54,10 @@ Deployment follows this process:
 
 This is automatically performed whenever there is a commit pushed to the `master` branch.
 
+To deploy manually, run:
+
+`DIGITALOCEAN_ACCESS_TOKEN=<INSERT TOKEN> make deploy`
+
 ### Required Environment
 
 The following environment variables must be defined in GitHub Actions:
