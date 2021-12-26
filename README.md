@@ -52,7 +52,13 @@ Deployment follows this process:
   - Note: This Docker image contains the source code to the bots. Do **NOT** include any confidential or proprietary information in the repository or build artifacts.
 - The app is deployed to Digital Ocean, using the built Docker image as the basis.
 
+This is automatically performed whenever there is a commit pushed to the `master` branch.
+
 ### Required Environment
+
+The following environment variables must be defined in GitHub Actions:
+
+- `DIGITALOCEAN_ACCESS_TOKEN`
 
 The following environment variables must be defined in the Digital Ocean App Platform environment:
 
