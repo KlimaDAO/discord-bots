@@ -42,7 +42,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.digitalocean.com/${{ secrets.DIGITAL_OCEAN_CONTAINER_REPO }}/discord-bots:latest
+          tags: registry.digitalocean.com/jem-klima/discord-bots:latest
           cache-from: type=gha
           cache-to: type=gha
   deploy:
