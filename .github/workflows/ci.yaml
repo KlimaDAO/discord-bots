@@ -42,9 +42,10 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.digitalocean.com/jem-klima/discord-bots:latest
+          tags: registry.digitalocean.com/${{ secrets.DIGITALOCEAN_DOCKER_REPO }}/discord-bots:latest
           cache-from: type=gha
           cache-to: type=gha
+          target: base
   deploy:
     name: Deploy Digital Ocean App
     runs-on: ubuntu-latest
