@@ -44,7 +44,7 @@ This project requires some API keys to run. When developing locally, you can cre
 
 ## Deployment
 
-The bots are hosted on Digital Ocean App Platform under a single app. Upon any commit to the `master` branch, the bots are deployed automatically.
+The bots are hosted on Digital Ocean App Platform under a single app. Upon any commit to the `main` branch, the bots are deployed automatically.
 
 Deployment follows this process:
 
@@ -52,7 +52,7 @@ Deployment follows this process:
   - Note: This Docker image contains the source code to the bots. Do **NOT** include any confidential or proprietary information in the repository or build artifacts.
 - The app is deployed to Digital Ocean, using the built Docker image as the basis.
 
-This is automatically performed whenever there is a commit pushed to the `master` branch.
+This is automatically performed whenever there is a commit pushed to the `main` branch.
 
 To deploy manually, run:
 
