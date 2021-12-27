@@ -50,6 +50,13 @@ jobs:
     name: Deploy Digital Ocean App
     runs-on: ubuntu-latest
     needs: build-docker
+    env:
+      POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+      WEB3_INFURA_PROJECT_ID: ${{ secrets.WEB3_INFURA_PROJECT_ID }}
+      DISCORD_BOT_TOKEN_REBASE: ${{ secrets.DISCORD_BOT_TOKEN_REBASE }}
+      DISCORD_BOT_WEBHOOK_REBASE: ${{ secrets.DISCORD_BOT_WEBHOOK_REBASE }}
+      DISCORD_BOT_TOKEN_KLIMA_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_KLIMA_PRICE }}
+      DISCORD_BOT_TOKEN_BCT_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_BCT_PRICE }}
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
@@ -60,14 +67,12 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Install envplate
         run: make install_envplate
+      - name: Check variables
+        uses: svrooij/secret-gate-action@v1
+        with:
+          inputsToCheck: "POLYGONSCAN_API_KEY,WEB3_INFURA_PROJECT_ID,DISCORD_BOT_TOKEN_REBASE,DISCORD_BOT_WEBHOOK_REBASE,DISCORD_BOT_TOKEN_KLIMA_PRICE,DISCORD_BOT_TOKEN_BCT_PRICE"
+          failOnMissing: "true"
       - name: Replace variables
-        run: make replace_variables && cat app-spec.yml
-        env:
-          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
-          WEB3_INFURA_PROJECT_ID: ${{ secrets.WEB3_INFURA_PROJECT_ID }}
-          DISCORD_BOT_TOKEN_REBASE: ${{ secrets.DISCORD_BOT_TOKEN_REBASE }}
-          DISCORD_BOT_WEBHOOK_REBASE: ${{ secrets.DISCORD_BOT_WEBHOOK_REBASE }}
-          DISCORD_BOT_TOKEN_KLIMA_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_KLIMA_PRICE }}
-          DISCORD_BOT_TOKEN_BCT_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_BCT_PRICE }}
+        run: make replace_variables
       - name: Upsert app
         run: doctl apps update ${{ secrets.DIGITALOCEAN_APP_ID }} --spec app-spec.yml --wait --verbose

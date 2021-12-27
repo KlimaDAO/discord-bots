@@ -9,7 +9,7 @@ DOCKER_DEPLOY_ENV=-e DIGITALOCEAN_ACCESS_TOKEN=$(DIGITALOCEAN_ACCESS_TOKEN)
 VOLUMES=-v $(shell pwd)/src:/opt/src
 
 replace_variables:
-	ep -s app-spec.yml
+	ep -s -v app-spec.yml
 
 install_envplate:
 	wget -qO- https://github.com/kreuzwerker/envplate/releases/download/v1.0.2/envplate_1.0.2_Linux_x86_64.tar.gz | tar xzvf - envplate && mv envplate /usr/local/bin/ep && chmod +x /usr/local/bin/ep
