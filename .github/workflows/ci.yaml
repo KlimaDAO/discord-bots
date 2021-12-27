@@ -67,8 +67,7 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Install envplate
         run: make install_envplate
-      - name: Check variables
-        uses: svrooij/secret-gate-action@v1
+      - uses: svrooij/secret-gate-action@v1
         with:
           inputsToCheck: "POLYGONSCAN_API_KEY,WEB3_INFURA_PROJECT_ID,DISCORD_BOT_TOKEN_REBASE,DISCORD_BOT_WEBHOOK_REBASE,DISCORD_BOT_TOKEN_KLIMA_PRICE,DISCORD_BOT_TOKEN_BCT_PRICE"
           failOnMissing: "true"
