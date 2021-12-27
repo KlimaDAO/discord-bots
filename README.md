@@ -73,9 +73,23 @@ The following environment variables must be defined in GitHub Actions:
 - `DIGITALOCEAN_CONTAINER_REPO`
   - Name of the Docker image registry hosted by Digital Ocean. It will be the name listed on this page: <https://cloud.digitalocean.com/registry>
 
+These variables must also be defined, and will be used to replace variables in the app-spec.yml file:
+
+- `POLYGONSCAN_API_KEY`
+- `WEB3_INFURA_PROJECT_ID`
+- `DISCORD_BOT_TOKEN_REBASE`
+- `DISCORD_BOT_WEBHOOK_REBASE`
+- `DISCORD_BOT_TOKEN_KLIMA_PRICE`
+- `DISCORD_BOT_TOKEN_BCT_PRICE`
+
 #### Digital Ocean App Platform
 
-The following environment variables must be defined in the Digital Ocean App Platform environment:
+The following environment variables are used in the Digital Ocean App Platform environment. They are populated using environment variables in the app-spec.yml for the following reasons:
+
+- It is cumbersome to include the secret in the configuration file, deploy it and then copy/paste the encrypted value into the file again.
+- Updating secrets becomes cumbersome as well.
+
+Instead, it is much easier to define and rotate secrets through the GitHub Actions secrets. We use the `envsubst` tool to achieve this.
 
 ##### App-level
 
@@ -102,9 +116,3 @@ Next Rebase
 
 - `DISCORD_BOT_TOKEN_REBASE`
 - `DISCORD_REBASE_BOT_WEBHOOK_URL`
-
-### Persisting Environment Variables
-
-Environment variables set through the DOAP web interface will be overwritten the next time there is a deployment. For this reason, after any app- or component-level environment variable is updated (either through the app-spec.yml or web interface), the app-spec.yml must be copied from the web interface and committed to version control. Any encrypted environment variables will also be encrypted in the copied app-spec.yml file, so there is no problem with committing to version control.
-
-To access: app -> settings -> scroll to app spec
