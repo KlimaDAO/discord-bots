@@ -61,7 +61,7 @@ jobs:
       - name: Install envplate
         run: make install_envplate
       - name: Replace variables
-        run: make replace_variables
+        run: make replace_variables && cat app-spec.yml
         env:
           POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
           WEB3_INFURA_PROJECT_ID: ${{ secrets.WEB3_INFURA_PROJECT_ID }}
