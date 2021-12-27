@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Deployment
 
 on:
   push:
@@ -6,21 +6,6 @@ on:
       - main
 
 jobs:
-  flake8-lint:
-    runs-on: ubuntu-latest
-    name: Lint
-    steps:
-      - name: Check out source repository
-        uses: actions/checkout@v2
-      - name: Set up Python environment
-        uses: actions/setup-python@v1
-        with:
-          python-version: "3.8"
-      - name: flake8 Lint
-        uses: py-actions/flake8@v1
-        with:
-          max-line-length: "120"
-          path: "src"
   build-docker:
     name: Build Docker image
     runs-on: ubuntu-latest
