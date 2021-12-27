@@ -9,10 +9,11 @@ DOCKER_DEPLOY_ENV=-e DIGITALOCEAN_ACCESS_TOKEN=$(DIGITALOCEAN_ACCESS_TOKEN)
 VOLUMES=-v $(shell pwd)/src:/opt/src
 
 replace_variables:
-	ep -s -v app-spec.yml
+	envsubst -no-unset -i app-spec.yml -o app-spec-new.yml && mv app-spec-new.yml app-spec.yml
 
-install_envplate:
-	wget -qO- https://github.com/kreuzwerker/envplate/releases/download/v1.0.2/envplate_1.0.2_Linux_x86_64.tar.gz | tar xzvf - envplate && mv envplate /usr/local/bin/ep && chmod +x /usr/local/bin/ep
+install_envsubst:
+	wget -O /usr/local/bin/envsubst https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m`
+	chmod +x /usr/local/bin/envsubst
 
 build:
 	docker build $(DOCKER_TARGET_BASE) -t $(DOCKER_USER)/$(DOCKER_IMAGE):$(DOCKER_TAG) .

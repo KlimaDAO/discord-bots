@@ -47,7 +47,7 @@ RUN GO111MODULE=on go install github.com/digitalocean/doctl/cmd/doctl@2fcbadcb46
 
 COPY Makefile Makefile
 
-# Install ep and move into place
-RUN make install_envplate
+# Install envsubst and move into place
+RUN make install_envsubst
 
 COPY app-spec.yml app-spec.yml
