@@ -5,11 +5,11 @@ envs:
   - key: POLYGONSCAN_API_KEY
     scope: RUN_AND_BUILD_TIME
     type: SECRET
-    value: EV[1:ZrM1+oCg+/rHV8IZZfI6SAitfoFOJRGX:j2CY/hGnfauUd1tPl41xkKSL3E0jldkuJz1RWu1uaFr9XXim/RKHKCO/LIjqWHBGBT8=]
+    value: ${POLYGONSCAN_API_KEY}
   - key: WEB3_INFURA_PROJECT_ID
     scope: RUN_AND_BUILD_TIME
     type: SECRET
-    value: EV[1:Er1N+gm21n6hcFKki0QJr4oMjFUt1GxQ:Xp5b2EaHpUE9AcygHqD17lcjlogaGk+cfqBnx3kJnUs445DrEzcTjH4wMgh4mI2j]
+    value: ${WEB3_INFURA_PROJECT_ID}
 name: discord-bots
 region: nyc
 workers:
@@ -18,11 +18,11 @@ workers:
       - key: DISCORD_BOT_TOKEN_REBASE
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: EV[1:UneNgwUeYE5X0WJTavsGitGgqlFJBdcb:eSFsO6nLw9OuxWuR1nH28ozZMTuU3m75XZLikuqIBtC1jzGW5hgG964cL0ouiF5yLiKo7nWWicibawHjOSwuHLIn1wYzWLcSXDnC]
+        value: ${DISCORD_BOT_TOKEN_REBASE}
       - key: DISCORD_REBASE_BOT_WEBHOOK_URL
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: EV[1:WLETRe6LlLX2AQ9bDxqxUw5EYf5KaGg+:ykLSNrv0PZds3lKItQ/6Ti2ZfFl8to8EbXGGMb7Mp1Outwx6C7lAU/W/DPyaBtHnPsbo7QbDxrLvKIPm+3vGxNm5r+WCdpk2J+nbLXSRmqWip+gSPjY9QAU8O2dKbD1q+rEXmZ+s8c5uZGTB9ZJ83YjKbJRBcOqIWJWpYJbLSCSU3VQCoqn6+Q==]
+        value: ${DISCORD_BOT_WEBHOOK_REBASE}
     image:
       registry_type: DOCR
       repository: discord-bots
@@ -37,7 +37,7 @@ workers:
       - key: DISCORD_BOT_TOKEN
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: EV[1:BGMncUcXE0BfqOpNsyIMlfQaGNERI6mQ:h/+r0QOqhIdKi5srwBiXFaZpGD4+E8+ETamKhGo0U7WlgN6pMk0Au1RKovZmpc4q2weCAhf597jWFVM3QKXlqmnegCRHKZbVbjR5]
+        value: ${DISCORD_BOT_TOKEN_KLIMA_PRICE}
     image:
       registry_type: DOCR
       repository: discord-bots
@@ -52,7 +52,7 @@ workers:
       - key: DISCORD_BOT_TOKEN
         scope: RUN_AND_BUILD_TIME
         type: SECRET
-        value: EV[1:4bxDK/GS87aWFVHrSE4JyJvRJQFikZqC:GCFjYoRdGOeB2DugdPePFI+rQZC0qHYih6ghKgcPXTVik69+ZtplgvJzJIW1jUlr98IJ5S2qn132UDQ1l4OlM+lA1KCW/fW9SiaF]
+        value: ${DISCORD_BOT_TOKEN_BCT_PRICE}
     image:
       registry_type: DOCR
       repository: discord-bots

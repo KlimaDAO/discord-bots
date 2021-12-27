@@ -45,7 +45,7 @@ jobs:
           tags: registry.digitalocean.com/${{ secrets.DIGITALOCEAN_CONTAINER_REPO }}/discord-bots:latest
           cache-from: type=gha
           cache-to: type=gha
-          target: base
+          target: prod
   deploy:
     name: Deploy Digital Ocean App
     runs-on: ubuntu-latest
@@ -53,9 +53,21 @@ jobs:
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
+      # TODO update doctl to use 2fcbadcb46efd8dca0d93fbef2a3a8394f5981ba with the error code fix
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Install envplate
+        run: make install_envplate
+      - name: Replace variables
+        run: make replace_variables
+        env:
+          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+          WEB3_INFURA_PROJECT_ID: ${{ secrets.WEB3_INFURA_PROJECT_ID }}
+          DISCORD_BOT_TOKEN_REBASE: ${{ secrets.DISCORD_BOT_TOKEN_REBASE }}
+          DISCORD_BOT_WEBHOOK_REBASE: ${{ secrets.DISCORD_BOT_WEBHOOK_REBASE }}
+          DISCORD_BOT_TOKEN_KLIMA_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_KLIMA_PRICE }}
+          DISCORD_BOT_TOKEN_BCT_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_BCT_PRICE }}
       - name: Upsert app
         run: doctl apps update ${{ secrets.DIGITALOCEAN_APP_ID }} --spec app-spec.yml --wait --verbose
