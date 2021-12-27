@@ -1,10 +1,9 @@
 name: Continuous Integration
 
-# TODO Restrict deployment to master branch
 on:
   push:
     branches:
-      - docker
+      - master
 
 jobs:
   flake8-lint:
