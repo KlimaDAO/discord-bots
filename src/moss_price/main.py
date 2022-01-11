@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands, tasks
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
-MOSS_ADDRESS = '0xAa7DbD1598251f856C12f63557A4C4397c253Cea'
+MCO2_ADDRESS = '0xfc98e825a2264d890f9a1e68ed50e1526abccacd'
 
 # Initialized Discord client
 intents = discord.Intents.all()
@@ -15,8 +15,11 @@ client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 # Initialize web3
 project_id = os.environ['WEB3_INFURA_PROJECT_ID']
 polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
+ethereum_mainnet_endpoint = f'https://mainnet.infura.io/v3/{project_id}'
 web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint))
+web3_eth = Web3(Web3.HTTPProvider(ethereum_mainnet_endpoint))
 assert(web3.isConnected())
+assert(web3_eth.isConnected())
 
 # Load ABIs
 script_dir = os.path.dirname(__file__)
@@ -45,16 +48,18 @@ def lp_contract_info(uni_address, basePrice=1):
 
 
 def get_moss_supply():
-    moss = web3.eth.contract(
-        address=Web3.toChecksumAddress(MOSS_ADDRESS),
+    moss = web3_eth.eth.contract(
+        address=Web3.toChecksumAddress(MCO2_ADDRESS),
         abi=moss_abi
     )
 
     try:
         decimals = moss.functions.decimals().call()
         total_supply = moss.functions.totalSupply().call() / 10**decimals
+        print(total_supply)
         return total_supply
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -84,7 +89,7 @@ async def update_info():
             await client.change_presence(
                 activity=discord.Activity(
                     type=discord.ActivityType.watching,
-                    name=f'Supply: {supply/1e3:,.1f}k'
+                    name=f'Supply: {supply/1e6:,.2f}M'
                 )
             )
         except discord.errors.HTTPException:
