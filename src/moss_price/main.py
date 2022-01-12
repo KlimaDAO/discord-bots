@@ -8,7 +8,7 @@ BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 MCO2_ADDRESS = '0xfc98e825a2264d890f9a1e68ed50e1526abccacd'
 
 # Initialized Discord client
-intents = discord.Intents.all()
+intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 
