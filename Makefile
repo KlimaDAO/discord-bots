@@ -1,6 +1,6 @@
 DOCKER_USER=klimadao
 DOCKER_IMAGE=discord-bots
-DOCKER_TAG=latest
+DOCKER_TAG=$(shell git rev-parse HEAD)
 DOCKER_IMAGE_DEPLOY=discord-bots-deploy
 DOCKER_TARGET_BASE=--target base
 DOCKER_TARGET_PROD=--target prod
