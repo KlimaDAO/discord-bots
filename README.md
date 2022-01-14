@@ -52,7 +52,7 @@ Deployment follows this process:
   - Note: This Docker image contains the source code to the bots. Do **NOT** include any confidential or proprietary information in the repository or build artifacts.
 - The app is deployed to Digital Ocean, using the built Docker image as the basis.
 
-This is automatically performed whenever there is a commit pushed to the `main` branch.
+This is automatically performed whenever there is a commit pushed to the `main` or `develop` branches.
 
 To deploy manually, run:
 
@@ -91,3 +91,14 @@ The above environment variables are used in the Digital Ocean App Platform envir
 - Updating secrets becomes cumbersome as well.
 
 Instead, it is much easier to define and rotate secrets through the GitHub Actions secrets. We use the `envsubst` tool to achieve this.
+
+### Multiple Deployments
+
+Each Docker image is tagged with the GitHub commit SHA, which prevents parallel deployments (`main` and `develop`) from clobbering each other.
+
+In order for parallel deployments to work, however, the following must be implemented:
+
+- Define the "default" (non-production) environment variables for the GitHub repository. This ensures that any new branches will use non-production variables by default.
+- Create an environment called "main" and define any variables that _differ_ from the default variables. At a minimum, this should include:
+  - `DIGITALOCEAN_APP_ID` (or else different branches will be the same DigitalOcean app and clobber each other).
+  - All of the `DISCORD_BOT_*` tokens (or else those bots will be clobbered).
