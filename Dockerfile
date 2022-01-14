@@ -51,3 +51,6 @@ COPY Makefile Makefile
 RUN make install_envsubst
 
 COPY app-spec.yml app-spec.yml
+
+# Ensures that variables in app-spec.yml are replaced every time
+ENTRYPOINT make replace_variables
