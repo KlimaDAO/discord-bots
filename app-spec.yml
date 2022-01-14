@@ -62,3 +62,18 @@ workers:
     name: bct-price
     run_command: python src/bct_price/main.py
     source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_MCO2_PRICE}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: bct-price
+    run_command: python src/bct_price/main.py
+    source_dir: /
