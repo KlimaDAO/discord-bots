@@ -85,35 +85,9 @@ These variables must also be defined, and will be used to replace variables in t
 
 #### Digital Ocean App Platform
 
-The following environment variables are used in the Digital Ocean App Platform environment. They are populated using environment variables in the app-spec.yml for the following reasons:
+The above environment variables are used in the Digital Ocean App Platform environment. They are injected into the `app-spec.yml` file for the following reasons:
 
 - It is cumbersome to include the secret in the configuration file, deploy it and then copy/paste the encrypted value into the file again.
 - Updating secrets becomes cumbersome as well.
 
 Instead, it is much easier to define and rotate secrets through the GitHub Actions secrets. We use the `envsubst` tool to achieve this.
-
-##### App-level
-
-- `WEB3_INFURA_PROJECT_ID`
-- `POLYGONSCAN_API_KEY`
-
-##### Component-level
-
-How to set: app -> settings -> components
-
-BCT Price
-
-- `DISCORD_BOT_TOKEN`
-
-Guerilla Marketing
-
-- `DISCORD_BOT_TOKEN`
-
-KLIMA Price
-
-- `DISCORD_BOT_TOKEN`
-
-Next Rebase
-
-- `DISCORD_BOT_TOKEN_REBASE`
-- `DISCORD_REBASE_BOT_WEBHOOK_URL`
