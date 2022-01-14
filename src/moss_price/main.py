@@ -5,39 +5,41 @@ import discord
 from discord.ext import commands, tasks
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
-
-BCT_ADDRESS = '0x2f800db0fdb5223b3c3f354886d907a671414a7f'
+MCO2_ADDRESS = '0xfc98e825a2264d890f9a1e68ed50e1526abccacd'
 
 # Initialized Discord client
-intents = discord.Intents.all()
+intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 
 # Initialize web3
 project_id = os.environ['WEB3_INFURA_PROJECT_ID']
 polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
+ethereum_mainnet_endpoint = f'https://mainnet.infura.io/v3/{project_id}'
 web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint))
+web3_eth = Web3(Web3.HTTPProvider(ethereum_mainnet_endpoint))
 assert(web3.isConnected())
+assert(web3_eth.isConnected())
 
 # Load ABIs
 script_dir = os.path.dirname(__file__)
 abi_dir = os.path.join(script_dir, 'abis')
 
-with open(os.path.join(abi_dir, 'sushiswap_pool.json'), 'r') as f:
-    sushi_abi = json.loads(f.read())
+with open(os.path.join(abi_dir, 'uniswap_pool.json'), 'r') as f:
+    uni_abi = json.loads(f.read())
 
 with open(os.path.join(abi_dir, 'carbon_pool.json'), 'r') as f:
-    bct_abi = json.loads(f.read())
+    moss_abi = json.loads(f.read())
 
 
-def lp_contract_info(sushi_address, basePrice=1):
-    sushiLP = web3.eth.contract(
-        address=Web3.toChecksumAddress(sushi_address),
-        abi=sushi_abi
+def lp_contract_info(uni_address, basePrice=1):
+    uniLP = web3.eth.contract(
+        address=Web3.toChecksumAddress(uni_address),
+        abi=uni_abi
     )
 
     try:
-        reserves = sushiLP.functions.getReserves().call()
+        reserves = uniLP.functions.getReserves().call()
         tokenPrice = reserves[0] * basePrice * 1e12 / reserves[1]
 
         return tokenPrice
@@ -45,17 +47,19 @@ def lp_contract_info(sushi_address, basePrice=1):
         return None
 
 
-def get_bct_supply():
-    bct = web3.eth.contract(
-        address=Web3.toChecksumAddress(BCT_ADDRESS),
-        abi=bct_abi
+def get_moss_supply():
+    moss = web3_eth.eth.contract(
+        address=Web3.toChecksumAddress(MCO2_ADDRESS),
+        abi=moss_abi
     )
 
     try:
-        decimals = bct.functions.decimals().call()
-        total_supply = bct.functions.totalSupply().call() / 10**decimals
+        decimals = moss.functions.decimals().call()
+        total_supply = moss.functions.totalSupply().call() / 10**decimals
+        print(total_supply)
         return total_supply
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -68,16 +72,16 @@ async def on_ready():
 
 @tasks.loop(seconds=300)
 async def update_info():
-    price = lp_contract_info(sushi_address='0x1e67124681b402064cd0abe8ed1b5c79d2e02f64')
-    supply = get_bct_supply()
+    price = lp_contract_info(uni_address='0x68aB4656736d48bb1DE8661b9A323713104e24cF')
+    supply = get_moss_supply()
 
     if price is not None and supply is not None:
-        print(f'${price:,.2f} BCT')
+        print(f'${price:,.2f} MCO2')
 
         for guild in client.guilds:
             guser = guild.get_member(client.user.id)
             try:
-                await guser.edit(nick=f'${price:,.2f} BCT')
+                await guser.edit(nick=f'${price:,.2f} MCO2')
             except discord.errors.HTTPException:
                 return
 
@@ -85,7 +89,7 @@ async def update_info():
             await client.change_presence(
                 activity=discord.Activity(
                     type=discord.ActivityType.watching,
-                    name=f'Supply: {supply/1e6:,.1f}M'
+                    name=f'Supply: {supply/1e6:,.2f}M'
                 )
             )
         except discord.errors.HTTPException:
