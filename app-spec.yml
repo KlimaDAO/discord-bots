@@ -74,6 +74,6 @@ workers:
       tag: ${GITHUB_SHA}
     instance_count: 1
     instance_size_slug: basic-xxs
-    name: bct-price
-    run_command: python src/bct_price/main.py
+    name: mco2-price
+    run_command: python src/moss_price/main.py
     source_dir: /
