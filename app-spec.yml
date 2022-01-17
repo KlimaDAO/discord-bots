@@ -77,3 +77,18 @@ workers:
     name: mco2-price
     run_command: python src/moss_price/main.py
     source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_STAKING_REWARDS}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: staking-rewards
+    run_command: python src/staking_rewards/main.py
+    source_dir: /
