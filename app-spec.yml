@@ -10,7 +10,7 @@ envs:
     scope: RUN_AND_BUILD_TIME
     type: SECRET
     value: ${WEB3_INFURA_PROJECT_ID}
-name: discord-bots
+name: ${DIGITALOCEAN_APP_NAME}
 region: nyc
 workers:
   - environment_slug: python

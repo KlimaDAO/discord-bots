@@ -58,6 +58,7 @@ The following environment variables must be defined in GitHub Actions:
 
 - `DIGITALOCEAN_ACCESS_TOKEN`
   - Generate a personal access token at the following URL: <https://cloud.digitalocean.com/account/api/tokens>
+- `DIGITALOCEAN_APP_NAME`
 - `DIGITALOCEAN_APP_ID`
   - In the Digital Ocean web interface, go to project -> apps, and copy the ID from the URL, e.g. `SOME-222-random-string` in <https://cloud.digitalocean.com/apps/SOME-222-random-string/settings>
 - `DIGITALOCEAN_CONTAINER_REPO`
