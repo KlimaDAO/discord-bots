@@ -2,21 +2,13 @@
 
 Custom Discord Bots powering the KlimaDAO community.
 
-This is a monorepo containing multiple bots:
-
-- BCT price:
-- Guerilla marketing:
-- KLIMA price:
-- Next rebase:
+This is a monorepo containing multiple bots.
 
 ## Layout
 
 src/
 
-- bct_price/
-- guerilla_marketing/
-- klima_price/
-- next_rebase/
+- each folder corresponds to a specific bot
 
 ## Setup
 
@@ -44,7 +36,7 @@ This project requires some API keys to run. When developing locally, you can cre
 
 ## Deployment
 
-The bots are hosted on Digital Ocean App Platform under a single app. Upon any commit to the `main` or `develop` branches, the bots are deployed automatically.
+The bots are hosted on Digital Ocean App Platform under a single app. Upon any commit to the `main` or `staging` branches, the bots are deployed automatically.
 
 Before this, the app must be created. It can be done through the DigitalOcean App Platform web interface, or through the `make create` command.
 
@@ -92,7 +84,7 @@ Instead, it is much easier to define and rotate secrets through the GitHub Actio
 
 ### Multiple Deployments
 
-Each Docker image is tagged with the GitHub commit SHA, which prevents parallel deployments (`main` and `develop`) from clobbering each other.
+Each Docker image is tagged with the GitHub commit SHA, which prevents parallel deployments (`main` and `staging`) from clobbering each other.
 
 In order for parallel deployments to work, however, the following must be implemented:
 
