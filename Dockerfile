@@ -1,5 +1,9 @@
 FROM --platform=linux/amd64 python:3.8-slim AS base
 
+# Set Python interpreter flags
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+
 # Install dependencies and do cleanup to save space
 RUN apt-get update && \
     apt-get install -y \
