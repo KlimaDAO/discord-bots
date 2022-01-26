@@ -72,7 +72,6 @@ async def update_info():
 
     if price is not None:
         print(f'${price:,.2f} KLIMA')
-        print(f'Marketcap: ${price*supply/1e6:,.1f}M')
 
         for guild in client.guilds:
             guser = guild.get_member(client.user.id)
@@ -82,6 +81,7 @@ async def update_info():
                 return
 
         if supply is not None:
+            print(f'Marketcap: ${price*supply/1e6:,.1f}M')
             try:
                 await client.change_presence(
                     activity=discord.Activity(
