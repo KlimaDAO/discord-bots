@@ -7,8 +7,9 @@ from discord.ext import commands, tasks
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
 # Initialized Discord client
-intents = discord.Intents.all()
-intents.members = True
+intents = discord.Intents.default()
+intents.members = False
+intents.presences = False
 client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 
 # Initialize web3
@@ -70,23 +71,23 @@ async def on_ready():
 async def update_info():
     price, supply = get_info()
 
-    if price is not None:
-        print(f'${price:,.2f} KLIMA')
+    if price is not None and supply is not None:
+        print(f'${price*supply/1e6:,.1f} MCap')
 
         for guild in client.guilds:
             guser = guild.get_member(client.user.id)
             try:
-                await guser.edit(nick=f'${price:,.2f} KLIMA')
+                await guser.edit(
+                    nick=f'MCap: ${price*supply/1e6:,.1f}M'
+                )
             except discord.errors.HTTPException:
                 return
 
-        if supply is not None:
-            print(f'Marketcap: ${price*supply/1e6:,.1f}M')
             try:
                 await client.change_presence(
                     activity=discord.Activity(
-                        type=discord.ActivityType.playing,
-                        name=f'Marketcap: ${price*supply/1e6:,.1f}M'
+                        type=discord.ActivityType.watching,
+                        name=f'KLIMA Price: ${price:,.2f}'
                     )
                 )
             except discord.errors.HTTPException:
