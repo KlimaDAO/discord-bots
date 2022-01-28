@@ -79,8 +79,6 @@ def get_block_30_days_ago():
         f'https://api.polygonscan.com/api?module=block&action=getblocknobytime&timestamp={timestamp}&closest=before&apikey={SCAN_API_KEY}'  # noqa: E501
     )
 
-    print(resp.content)
-
     try:
         block_num = int(
             json.loads(resp.content)['result']
