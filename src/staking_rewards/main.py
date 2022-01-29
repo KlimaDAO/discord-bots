@@ -4,40 +4,25 @@ import json
 import math
 
 import requests
-from web3 import Web3
 from web3.middleware import geth_poa_middleware
-import discord
-from discord.ext import commands, tasks
+from discord.ext import tasks
+
+from ..constants import DISTRIBUTOR_ADDRESS, SKLIMA_ADDRESS
+from ..utils import get_discord_client, get_polygon_web3, load_abi, update_nickname, update_presence
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 SCAN_API_KEY = os.environ['POLYGONSCAN_API_KEY']
 
 # Initialized Discord client
-intents = discord.Intents.default()
-intents.presences = True
-intents.members = False
-client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
+client = get_discord_client()
 
 # Initialize web3
-project_id = os.environ['WEB3_INFURA_PROJECT_ID']
-polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
-web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint))
+web3 = get_polygon_web3()
 web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-assert (web3.isConnected())
-
-DISTRIBUTOR_ADDRESS = Web3.toChecksumAddress("0x4cC7584C3f8FAABf734374ef129dF17c3517e9cB")  # noqa: E501
-SKLIMA_ADDRESS = Web3.toChecksumAddress("0xb0C22d8D350C67420f06F48936654f567C73E8C8")  # noqa: E501
 
 # Load ABIs
-script_dir = os.path.dirname(__file__)
-abi_dir = os.path.join(script_dir, 'abis')
-
-with open(os.path.join(abi_dir, 'distributor.json'), 'r') as f:
-    DISTRIBUTOR_ABI = json.load(f)
-
-
-with open(os.path.join(abi_dir, 'sklima.json'), 'r') as f:
-    SKLIMA_ABI = json.load(f)
+DISTRIBUTOR_ABI = load_abi('distributor.json')
+SKLIMA_ABI = load_abi('sklima.json')
 
 
 def get_staking_params():
@@ -143,21 +128,18 @@ async def update_info():
     else:
         return
 
-    print(f'5 Day Yield: {five_day_roi*100:,.2f}%')
+    yield_text = f'{five_day_roi*100:,.2f}% 5 Day Yield'
+    print(yield_text)
 
-    for guild in client.guilds:
-        guser = guild.get_member(client.user.id)
-        try:
-            await guser.edit(nick=f'{five_day_roi*100:,.2f}% 5 Day Yield')
-        except discord.errors.HTTPException:
-            return
+    success = await update_nickname(client, yield_text)
+    if not success:
+        return
 
-    await client.change_presence(
-        activity=discord.Activity(
-            type=discord.ActivityType.playing,
-            name=f'{staking_apy*100:,.2f}% APY'
-        )
+    success = await update_presence(
+        client, f'{staking_apy*100:,.2f}% APY', 'playing'
     )
+    if not success:
+        return
 
 
 client.run(BOT_TOKEN)

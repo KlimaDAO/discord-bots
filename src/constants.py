@@ -1,0 +1,22 @@
+from web3 import Web3
+
+# Token Decimals
+USDC_DECIMALS = 12
+KLIMA_DECIMALS = 9
+BCT_DECIMALS = 18
+MCO2_DECIMALS = 18
+
+# Token Addresses
+BCT_ADDRESS = Web3.toChecksumAddress('0x2f800db0fdb5223b3c3f354886d907a671414a7f')
+KLIMA_ADDRESS = Web3.toChecksumAddress('0x4e78011Ce80ee02d2c3e649Fb657E45898257815')
+MCO2_ADDRESS = Web3.toChecksumAddress('0xfc98e825a2264d890f9a1e68ed50e1526abccacd')
+
+# SushiSwap LP Pool Addresses
+BCT_USDC_POOL = Web3.toChecksumAddress('0x1e67124681b402064cd0abe8ed1b5c79d2e02f64')
+KLIMA_BCT_POOL = Web3.toChecksumAddress('0x9803c7ae526049210a1725f7487af26fe2c24614')
+MCO2_USDC_POOL = Web3.toChecksumAddress('0x68aB4656736d48bb1DE8661b9A323713104e24cF')
+
+# Klima Protocol Contracts
+STAKING_ADDRESS = Web3.toChecksumAddress('0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d')
+DISTRIBUTOR_ADDRESS = Web3.toChecksumAddress("0x4cC7584C3f8FAABf734374ef129dF17c3517e9cB")
+SKLIMA_ADDRESS = Web3.toChecksumAddress("0xb0C22d8D350C67420f06F48936654f567C73E8C8")

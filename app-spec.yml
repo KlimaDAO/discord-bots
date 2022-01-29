@@ -30,7 +30,7 @@ workers:
     instance_count: 1
     instance_size_slug: basic-xxs
     name: next-rebase
-    run_command: python src/next_rebase/main.py
+    run_command: python -m src.next_rebase.main
     source_dir: /
   - environment_slug: python
     envs:
@@ -45,7 +45,7 @@ workers:
     instance_count: 1
     instance_size_slug: basic-xxs
     name: klima-price
-    run_command: python src/klima_price/main.py
+    run_command: python -m src.klima_price.main
     source_dir: /
   - environment_slug: python
     envs:
@@ -60,7 +60,7 @@ workers:
     instance_count: 1
     instance_size_slug: basic-xxs
     name: bct-price
-    run_command: python src/bct_price/main.py
+    run_command: python -m src.bct_price.main
     source_dir: /
   - environment_slug: python
     envs:
@@ -75,7 +75,7 @@ workers:
     instance_count: 1
     instance_size_slug: basic-xxs
     name: mco2-price
-    run_command: python src/moss_price/main.py
+    run_command: python -m src.moss_price.main
     source_dir: /
   - environment_slug: python
     envs:
@@ -90,5 +90,20 @@ workers:
     instance_count: 1
     instance_size_slug: basic-xxs
     name: staking-rewards
-    run_command: python src/staking_rewards/main.py
+    run_command: python -m src.staking_rewards.main
+    source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_SUPPLY_INDEX}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: supply-index
+    run_command: python -m src.supply_index.main
     source_dir: /
