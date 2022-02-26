@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import os
 import json
 import math
+import traceback
 
 import requests
 from web3.middleware import geth_poa_middleware
@@ -40,6 +41,7 @@ def get_staking_params():
 
         return staking_reward, epoch_length
     except ValueError:
+        traceback.print_exc()
         return None
 
 
@@ -52,6 +54,7 @@ def get_circ_supply():
     try:
         return sklima_contract.functions.circulatingSupply().call()
     except ValueError:
+        traceback.print_exc()
         return None
 
 
@@ -68,7 +71,8 @@ def get_block_30_days_ago():
         block_num = int(
             json.loads(resp.content)['result']
         )
-    except (TypeError, json.decoder.JSONDecodeError):
+    except (TypeError, json.decoder.JSONDecodeError, ValueError):
+        traceback.print_exc()
         block_num = None
 
     return block_num
@@ -91,6 +95,7 @@ def get_rebases_per_day(blocks_per_rebase):
 
         prev_block_time = web3.eth.get_block(block_30_days_ago)['timestamp']
     except ValueError:
+        traceback.print_exc()
         return None
 
     block_diff = latest_block_num - block_30_days_ago
