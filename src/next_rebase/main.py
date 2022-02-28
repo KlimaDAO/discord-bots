@@ -4,9 +4,12 @@ import json
 from time import time
 
 import discord
-from discord.ext import commands, tasks
+from discord.ext import tasks
 import requests
-from web3 import Web3
+
+from ..constants import STAKING_ADDRESS
+from ..utils import get_discord_client, get_polygon_web3, load_abi, update_nickname, update_presence
+
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN_REBASE"]
 SCAN_API_KEY = os.environ['POLYGONSCAN_API_KEY']
@@ -14,21 +17,12 @@ SCAN_API_KEY = os.environ['POLYGONSCAN_API_KEY']
 REBASER_ROLE_ID = '912771496122916905'
 
 # Initialized Discord client
-intents = discord.Intents.default()
-intents.members = True  # Subscribe to the privileged members intent.
-client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
+client = get_discord_client()
 
 # Initialize web3
-project_id = os.environ['WEB3_INFURA_PROJECT_ID']
-polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{project_id}'
-web3 = Web3(Web3.HTTPProvider(
-    polygon_mainnet_endpoint,
-    request_kwargs={'timeout': 60})
-)
-assert(web3.isConnected())
+web3 = get_polygon_web3()
 
-address = Web3.toChecksumAddress("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d")
-abi = json.loads('[{"inputs":[{"internalType":"address","name":"_KLIMA","type":"address"},{"internalType":"address","name":"_sKLIMA","type":"address"},{"internalType":"uint256","name":"_epochLength","type":"uint256"},{"internalType":"uint256","name":"_firstEpochNumber","type":"uint256"},{"internalType":"uint256","name":"_firstEpochBlock","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipPulled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipPushed","type":"event"},{"inputs":[],"name":"KLIMA","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_recipient","type":"address"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"contractBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"distributor","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"epoch","outputs":[{"internalType":"uint256","name":"length","type":"uint256"},{"internalType":"uint256","name":"number","type":"uint256"},{"internalType":"uint256","name":"endBlock","type":"uint256"},{"internalType":"uint256","name":"distribute","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"forfeit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"giveLockBonus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"index","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"locker","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"manager","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pullManagement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner_","type":"address"}],"name":"pushManagement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rebase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceManagement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"returnLockBonus","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"sKLIMA","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"enum KlimaStaking.CONTRACTS","name":"_contract","type":"uint8"},{"internalType":"address","name":"_address","type":"address"}],"name":"setContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_warmupPeriod","type":"uint256"}],"name":"setWarmup","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"address","name":"_recipient","type":"address"}],"name":"stake","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"toggleDepositLock","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalBonus","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"bool","name":"_trigger","type":"bool"}],"name":"unstake","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"warmupContract","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"warmupInfo","outputs":[{"internalType":"uint256","name":"deposit","type":"uint256"},{"internalType":"uint256","name":"gons","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"bool","name":"lock","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"warmupPeriod","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]')  # noqa: E501
+staking_abi = load_abi('klima_staking.json')
 
 last_rebase_warning = 0
 last_rebase_alert = 0
@@ -42,7 +36,7 @@ def get_webhook():
 
 
 def get_epoch_info():
-    contract_instance = web3.eth.contract(address=address, abi=abi)
+    contract_instance = web3.eth.contract(address=STAKING_ADDRESS, abi=staking_abi)
     try:
         epoch_info = contract_instance.functions.epoch().call()
     except ValueError:
@@ -121,19 +115,18 @@ async def update_info():
             f"Rebasing momentarily! <@&{REBASER_ROLE_ID}> (:deciduous_tree:, :deciduous_tree:)"
         )
 
-    for guild in client.guilds:
-        guser = guild.get_member(client.user.id)
-        try:
-            await guser.edit(nick=f'Rebase In: {int(hours)}h {int(minutes)}m ')
-        except discord.errors.HTTPException:
-            return
+    countdown_text = f'Rebase In: {int(hours)}h {int(minutes)}m'
 
-    await client.change_presence(
-        activity=discord.Activity(
-            type=discord.ActivityType.playing,
-            name=f'Epoch {next_epoch_number} @ {next_rebase_time} UTC'
-        )
+    success = await update_nickname(client, countdown_text)
+    if not success:
+        return
+
+    success = await update_presence(
+        client, f'Epoch {next_epoch_number} @ {next_rebase_time} UTC',
+        'playing'
     )
+    if not success:
+        return
 
 
 client.run(BOT_TOKEN)

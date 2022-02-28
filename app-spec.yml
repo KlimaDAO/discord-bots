@@ -1,0 +1,109 @@
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+envs:
+  - key: POLYGONSCAN_API_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: ${POLYGONSCAN_API_KEY}
+  - key: WEB3_INFURA_PROJECT_ID
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: ${WEB3_INFURA_PROJECT_ID}
+name: ${DIGITALOCEAN_APP_NAME}
+region: nyc
+workers:
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN_REBASE
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_REBASE}
+      - key: DISCORD_REBASE_BOT_WEBHOOK_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_WEBHOOK_REBASE}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: next-rebase
+    run_command: python -m src.next_rebase.main
+    source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_KLIMA_PRICE}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: klima-price
+    run_command: python -m src.klima_price.main
+    source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_BCT_PRICE}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: bct-price
+    run_command: python -m src.bct_price.main
+    source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_MCO2_PRICE}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: mco2-price
+    run_command: python -m src.moss_price.main
+    source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_STAKING_REWARDS}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: staking-rewards
+    run_command: python -m src.staking_rewards.main
+    source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_SUPPLY_INDEX}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: supply-index
+    run_command: python -m src.supply_index.main
+    source_dir: /
