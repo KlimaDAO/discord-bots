@@ -10,6 +10,7 @@ MCO2_DECIMALS = 18
 BCT_ADDRESS = Web3.toChecksumAddress('0x2f800db0fdb5223b3c3f354886d907a671414a7f')
 KLIMA_ADDRESS = Web3.toChecksumAddress('0x4e78011Ce80ee02d2c3e649Fb657E45898257815')
 MCO2_ADDRESS = Web3.toChecksumAddress('0xfc98e825a2264d890f9a1e68ed50e1526abccacd')
+USDC_ADDRESS = Web3.toChecksumAddress('0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174')
 
 # SushiSwap LP Pool Addresses
 BCT_USDC_POOL = Web3.toChecksumAddress('0x1e67124681b402064cd0abe8ed1b5c79d2e02f64')

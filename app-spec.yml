@@ -107,3 +107,22 @@ workers:
     name: supply-index
     run_command: python -m src.supply_index.main
     source_dir: /
+  - environment_slug: python
+    envs:
+      - key: DISCORD_BOT_TOKEN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_BOT_TOKEN_KLIMA_BOND_ALERTS}
+      - key: AIRTABLE_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${AIRTABLE_API_KEY}
+    image:
+      registry_type: DOCR
+      repository: discord-bots
+      tag: ${GITHUB_SHA}
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    name: bond-alerts
+    run_command: python -m src.bond_alerts.main
+    source_dir: /
