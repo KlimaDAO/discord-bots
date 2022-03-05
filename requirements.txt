@@ -1,4 +1,4 @@
 qrcode
-discord
+py-cord[speed]
 discord-py-interactions
 web3
