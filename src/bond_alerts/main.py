@@ -5,12 +5,14 @@ import decimal
 
 import discord
 from discord.ext import tasks
-from discord.app import Option
+from discord.commands import Option
 from web3 import Web3
 
-from ..constants import DISTRIBUTOR_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, BCT_USDC_POOL, KLIMA_BCT_POOL   # noqa: E501
+from ..constants import DISTRIBUTOR_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, \
+                        BCT_USDC_POOL, KLIMA_BCT_POOL
 from ..utils import get_discord_client, get_polygon_web3, load_abi
-from airtable_utils import alert_db, bond_db, search_alert, activate_alert, deactivate_alert, fetch_bond_md, fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert   # noqa: E501
+from .airtable_utils import alert_db, bond_db, search_alert, activate_alert, deactivate_alert, fetch_bond_md, \
+                            fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
