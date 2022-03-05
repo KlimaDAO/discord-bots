@@ -31,7 +31,7 @@ last_rebase_alert = 0
 def get_webhook():
     return discord.Webhook.from_url(
         os.environ["DISCORD_REBASE_BOT_WEBHOOK_URL"],
-        adapter=discord.RequestsWebhookAdapter()
+        adapter=discord.WebhookAdapter()
     )
 
 
