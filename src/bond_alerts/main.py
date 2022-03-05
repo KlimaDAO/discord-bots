@@ -8,11 +8,11 @@ from discord.ext import tasks
 from discord.commands import Option
 from web3 import Web3
 
-from ..constants import DISTRIBUTOR_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, \
-                        BCT_USDC_POOL, KLIMA_BCT_POOL
+from ..constants import STAKING_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, \
+    BCT_USDC_POOL, KLIMA_BCT_POOL
 from ..utils import get_discord_client, get_polygon_web3, load_abi
 from .airtable_utils import alert_db, bond_db, search_alert, activate_alert, deactivate_alert, fetch_bond_md, \
-                            fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert
+    fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -25,7 +25,7 @@ web3 = get_polygon_web3()
 # Load ABIs
 SKLIMA_ABI = load_abi('sklima.json')
 BOND_ABI = load_abi('klima_bond.json')
-DISTRIBUTOR_ABI = load_abi('distributor.json')
+STAKING_ABI = load_abi('klima_staking.json')
 TOKEN_ABI = load_abi('erc20_token.json')
 
 # Init global variables
@@ -50,9 +50,11 @@ def base_token_price(lp_address, known_address, known_price):
         decimals1 = token1.functions.decimals().call()
 
         if Web3.toChecksumAddress(known_address) == address0:
-            tokenPrice = known_price*reserves[0]*10**decimals1/(reserves[1]*10**decimals0)
+            tokenPrice = known_price * \
+                reserves[0] * 10**decimals1 / (reserves[1] * 10**decimals0)
         else:
-            tokenPrice = known_price*reserves[1]*10**decimals0/(reserves[0]*10**decimals1)
+            tokenPrice = known_price * \
+                reserves[1] * 10**decimals0 / (reserves[0] * 10**decimals1)
 
         return(tokenPrice)
 
@@ -74,9 +76,9 @@ def lp_price(lp_address):
         token1 = web3.eth.contract(address=address1, abi=TOKEN_ABI)
 
         get_reserves = LP_contract.functions.getReserves().call()
-        amount0 = get_reserves[0]/10**token0.functions.decimals().call()
-        amount1 = get_reserves[1]/10**token1.functions.decimals().call()
-        return(decimal.Decimal(amount0/amount1))
+        amount0 = get_reserves[0] / 10**token0.functions.decimals().call()
+        amount1 = get_reserves[1] / 10**token1.functions.decimals().call()
+        return(decimal.Decimal(amount0 / amount1))
 
     except Exception as e:
         print('lp_price error')
@@ -86,24 +88,26 @@ def lp_price(lp_address):
 def fetch_staking_rewards():
     try:
         # Retrieve staking rewards and calculate 5 day ROI
-        distrib = web3.eth.contract(address=DISTRIBUTOR_ADDRESS, abi=DISTRIBUTOR_ABI)
+        distrib = web3.eth.contract(address=STAKING_ADDRESS, abi=STAKING_ABI)
         distrib_info = distrib.functions.epoch().call()
         rewards = distrib_info[3]
 
         sKLIMA = web3.eth.contract(address=SKLIMA_ADDRESS, abi=SKLIMA_ABI)
         circ_supply = sKLIMA.functions.circulatingSupply().call()
 
-        print("Staking:")
-        print(f'   Next epoch rewards: {(100*rewards/circ_supply):,.2f} %')
-        print(f'   5 days ROI: {(100 * (1+rewards/circ_supply)**float(15)-100):,.2f} %')
-        print('\n')
-        rebase = rewards/circ_supply
-        staking_rewards = (1+rewards/circ_supply)**float(15)-1
-        return(rebase, 100*staking_rewards)
+        # print("Staking:")
+        # print(f'   Next epoch rewards: {(100 * rewards / circ_supply):,.2f} %')
+        # print(
+        #     f'   5 days ROI: {(100 * (1 + rewards/circ_supply)**float(15) - 100):,.2f} %')
+        # print('\n')
+        rebase = rewards / circ_supply
+        staking_rewards = (1 + rewards / circ_supply)**float(15) - 1
+        return(rebase, 100 * staking_rewards)
 
     except Exception as e:
         print('fetch_staking_rewards error')
         print(e)
+        return None, None
 
 
 def contract_info(bond_address, payoutTokenPrice, maxReached=False):
@@ -115,12 +119,12 @@ def contract_info(bond_address, payoutTokenPrice, maxReached=False):
             bond = web3.eth.contract(address=bond_address, abi=BOND_ABI)
 
             # Bonds are priced in BCTs despide the function is called bondPriceInUSD
-            print('Bonds:')
-            BondPriceUSD = bond.functions.bondPriceInUSD().call()/1e18
-            MaxCap = bond.functions.maxPayout().call()/1e9
+            # print('Bonds:')
+            BondPriceUSD = bond.functions.bondPriceInUSD().call() / 1e18
+            MaxCap = bond.functions.maxPayout().call() / 1e9
             Disc = (decimal.Decimal(payoutTokenPrice) - decimal.Decimal(BondPriceUSD)) / decimal.Decimal(payoutTokenPrice)  # noqa: E501
-            print(f' BondPrice: {BondPriceUSD:,.2f}BCT')
-            print(f' Discount: {100 * Disc:,.2f} %')
+            # print(f' BondPrice: {BondPriceUSD:,.2f}BCT')
+            # print(f' Discount: {100 * Disc:,.2f} %')
             return(payoutTokenPrice, 100 * Disc, MaxCap)
 
         except Exception as e:
@@ -143,10 +147,12 @@ def max_debt_reached(bond_address):
 
 
 def check_is_worth(staking_rewards, rebase, bondDiscount):
-    if staking_rewards >= bondDiscount + ((1+rebase))*(1-(1+rebase)**15)/(1-(1+rebase))/15 - 1:
-        return(':no_entry:', bondDiscount + ((1+rebase))*(1-(1+rebase)**15)/(1-(1+rebase))/15 - 1)
+    cutoff_discount = bondDiscount + \
+        ((1 + rebase)) * (1 - (1 + rebase)**15) / (1 - (1 + rebase)) / 15 - 1
+    if staking_rewards >= cutoff_discount:
+        return(':no_entry:', cutoff_discount)
     else:
-        return(':white_check_mark:', bondDiscount + ((1+rebase))*(1-(1+rebase)**15)/(1-(1+rebase))/15 - 1)  # noqa: E501
+        return(':white_check_mark:', cutoff_discount)
 
 
 def get_prices():
@@ -156,9 +162,13 @@ def get_prices():
 
     if datetime.datetime.now() - datetime.timedelta(seconds=120) >= last_call:
         # Retrieve prices
-        bct_price_usd = base_token_price(lp_address=BCT_USDC_POOL, known_address=USDC_ADDRESS, known_price=1)  # noqa: E501
-        klima_price_usd = base_token_price(lp_address=KLIMA_BCT_POOL, known_address=BCT_ADDRESS, known_price=bct_price_usd)  # noqa: E501
-        klima_price_bct = klima_price_usd/bct_price_usd
+        bct_price_usd = base_token_price(
+            lp_address=BCT_USDC_POOL, known_address=USDC_ADDRESS, known_price=1
+        )
+        klima_price_usd = base_token_price(
+            lp_address=KLIMA_BCT_POOL, known_address=BCT_ADDRESS, known_price=bct_price_usd
+        )
+        klima_price_bct = klima_price_usd / bct_price_usd
         last_call = datetime.datetime.now()
 
         # Update staking rewards
@@ -167,7 +177,8 @@ def get_prices():
         # Update bond info
         for b in bond_list:
             address, abi = fetch_bond_md(bond_db, b)
-            is_closed = max_debt_reached(bond_address=Web3.toChecksumAddress(address))
+            is_closed = max_debt_reached(
+                bond_address=Web3.toChecksumAddress(address))
             price, disc, bond_max = contract_info(bond_address=Web3.toChecksumAddress(address), payoutTokenPrice=klima_price_bct, maxReached=is_closed)  # noqa: E501
             update_bond_info(bond_db, update_bond=b, update_price=price, update_disc=float(disc), update_capacity=bond_max, update_debt=is_closed)  # noqa: E501
 
@@ -181,14 +192,18 @@ def get_prices():
 # Create a class for the embed
 class PageButton(discord.ui.Button):
     def __init__(self, current, pages):
-        super().__init__(style=discord.ButtonStyle.secondary, label=f"Page {current+1}/{pages+1}", disabled=True, custom_id='page')  # noqa: E501
+        super().__init__(
+            style=discord.ButtonStyle.secondary,
+            label=f"Page {current + 1}/{pages + 1}",
+            disabled=True, custom_id='page'
+        )
 
 
 class Pagination(discord.ui.View):
     def __init__(self, paginationList):
         super().__init__(timeout=10)
         self.value = 0
-        self.pages = len(paginationList)-1
+        self.pages = len(paginationList) - 1
         self.paginationList = paginationList
         self.add_item(PageButton(current=self.value, pages=self.pages))
         self.message = 0
@@ -234,28 +249,41 @@ async def on_ready():
 async def check_discounts():
     klima_price_usd, rebase, staking_rewards, bond_info = get_prices()
 
+    if klima_price_usd is None or rebase is None or staking_rewards is None or bond_info is None:
+        return
+
     for bond, values in bond_info.items():
         if values.debt_reached is False:
             # Reactivate alerts if discounts have diminished enough
             reactivate = search_alert(alert_db, search_bond=bond, search_discount=values.discount, search_type='reactivate')  # noqa: E501
             for alert in reactivate:
-                activate_alert(alert_db, search_bond=bond, search_discount=alert.discount, search_user=alert.user)
-                print(f'Alert reseted for {bond} at more than {values.discount}% discount')
+                activate_alert(alert_db, search_bond=bond,
+                               search_discount=alert.discount, search_user=alert.user)
+                print(
+                    f'Alert reset for {bond} at more than {values.discount}% discount')
 
             # Send alerts if discounts are big enough
             triggered = search_alert(alert_db, search_bond=bond, search_discount=values.discount, search_type='triggered')  # noqa: E501
             for alert in triggered:
-                deactivate_alert(alert_db, search_bond=bond, search_discount=alert.discount, search_user=alert.user)
-                is_worth, max_bond_disc = check_is_worth(staking_rewards, rebase, values.discount)
+                deactivate_alert(alert_db, search_bond=bond,
+                                 search_discount=alert.discount, search_user=alert.user)
+                is_worth, max_bond_disc = check_is_worth(
+                    staking_rewards, rebase, values.discount)
 
                 embed = discord.Embed(title='Big Bond Discount!', description=f':small_blue_diamond: 5 day ROI for **staking** sits at **{staking_rewards:,.2f}%** \n :small_blue_diamond: Current **KLIMA** price is **${klima_price_usd:,.2f}** \n :small_blue_diamond: Some of your alert thresholds have been reached by current bond discounts', colour=0x17d988)  # noqa: E501
-                embed.add_field(name='Bond Type', value=values.bond, inline=True)
-                embed.add_field(name='Discount', value=f' {values.discount:,.2f}%', inline=True)
+                embed.add_field(name='Bond Type',
+                                value=values.bond, inline=True)
+                embed.add_field(name='Discount',
+                                value=f' {values.discount:,.2f}%', inline=True)
                 embed.add_field(name='\u200b', value='\u200b', inline=True)
-                embed.add_field(name='Could beat staking', value=is_worth, inline=True)
-                embed.add_field(name='Compound Discount', value=f' {max_bond_disc:,.2f}%', inline=True)
-                embed.add_field(name='Max payout', value=f'{values.max_purchase:,.2f} KLIMA', inline=True)
-                embed.set_footer(text='This alert is courtesy of your klimate @0xRusowsky')
+                embed.add_field(name='Could beat staking',
+                                value=is_worth, inline=True)
+                embed.add_field(name='Compound Discount',
+                                value=f' {max_bond_disc:,.2f}%', inline=True)
+                embed.add_field(
+                    name='Max payout', value=f'{values.max_purchase:,.2f} KLIMA', inline=True)
+                embed.set_footer(
+                    text='This alert is courtesy of your Klimate @0xRusowsky')
 
                 user = client.get_user(int(alert.user))
                 await user.send(embed=embed)
@@ -276,9 +304,11 @@ async def bonds(ctx):
         if i[4] is False:
             fields = fields + [(('Bond Type', i[0]), ('Discount', f'{i[2]:,.2f}%'), ('Could be profitable?', i[1][0]), ('Compound Discount', f' {i[1][1]:,.2f}%'), ('Max payout', f'{i[3]:,.2f} KLIMA'))]  # noqa: E501
         else:
-            fields = fields + [(('Bond Type', i[0]), ('Sold Out  :no_entry:', "Max Debt Reached"))]
+            fields = fields + \
+                [(('Bond Type', i[0]), ('Sold Out  :no_entry:', "Max Debt Reached"))]
 
-    lfields = [fields[i * 4:(i + 1) * 4] for i in range((len(fields) + 4 - 1) // 4)]
+    lfields = [fields[i * 4:(i + 1) * 4]
+               for i in range((len(fields) + 4 - 1) // 4)]
     paginationList = []
     page = 0
     for lf in lfields:
@@ -317,7 +347,8 @@ async def info_bonds(ctx):
         address, abi = fetch_bond_md(bond_db, b)
         embed.add_field(name='Bond Type', value=b, inline=True)
         embed.add_field(name='\u200b', value='\u200b', inline=True)
-        embed.add_field(name='Contract', value=f'[Link](https://polygonscan.com/address/{address})', inline=True)
+        embed.add_field(
+            name='Contract', value=f'[Link](https://polygonscan.com/address/{address})', inline=True)
 
     await ctx.respond(embed=embed)
 
@@ -334,7 +365,8 @@ async def create_alert(
         bond_str = bond_str + " \n :black_small_square: " + b
     bond = bond_type.upper()
 
-    code = add_alert(alert_db, add_bond=bond_type, add_discount=min_discount, add_user=str(ctx.author.id))
+    code = add_alert(alert_db, add_bond=bond_type,
+                     add_discount=min_discount, add_user=str(ctx.author.id))
     if code == 1:
         embed = discord.Embed(title="New Bond Alert Configured", description=f'{ctx.author.mention} has created a new alert for discounts over {min_discount}% on {bond} bonds!', colour=0x17d988)  # noqa: E501
         await ctx.respond(embed=embed)
@@ -360,7 +392,8 @@ async def delete_alert(
 ):
     bond = bond_type.upper()
 
-    code = remove_alert(alert_db, delete_bond=bond_type, delete_discount=min_discount, delete_user=ctx.author.id)
+    code = remove_alert(alert_db, delete_bond=bond_type,
+                        delete_discount=min_discount, delete_user=ctx.author.id)
     if code == 1:
         embed = discord.Embed(title="Bond Alert Deleted", description=f'{ctx.author.mention} has deleted an alert for discounts over {min_discount}% on {bond} bonds!', colour=0x17d988)  # noqa: E501
         await ctx.respond(embed=embed)
@@ -378,7 +411,8 @@ async def delete_all(ctx):
     if len(alert_list) > 0:
         check = 0
         for a in alert_list:
-            code = remove_alert(alert_db, delete_bond=a.bond, delete_discount=a.discount, delete_user=a.user)
+            code = remove_alert(alert_db, delete_bond=a.bond,
+                                delete_discount=a.discount, delete_user=a.user)
             check += code
         if check == len(alert_list):
             embed = discord.Embed(title="All Bond Alerts Deleted", description=f'{ctx.author.mention} has deleted all bond alerts!', colour=0x17d988)  # noqa: E501
@@ -399,7 +433,8 @@ async def my_alerts(ctx):
         embed = discord.Embed(title="Configured Alerts", description=f'{ctx.author.mention} currently has the following alerts configured.', colour=0xFFFFFF)  # noqa: E501
         for a in alert_list:
             embed.add_field(name='Bond Type', value=a.bond, inline=True)
-            embed.add_field(name='Discount', value=f'{a.discount}%', inline=True)
+            embed.add_field(name='Discount',
+                            value=f'{a.discount}%', inline=True)
             embed.add_field(name='\u200b', value='\u200b', inline=True)
         await ctx.respond(embed=embed)
     else:
@@ -417,7 +452,8 @@ async def help_bonds(ctx):
     embed.add_field(name=':small_orange_diamond: /delete_all', value='Deletes all the alerts that the user previously configured.', inline=False)  # noqa: E501
     embed.add_field(name=':small_orange_diamond: /delete_alert', value='Deletes an existing bond alert. \n :black_small_square: **bond_type:**  must belong to  the ones listed under  **/info_bonds** \n :black_small_square: **min_discount:**  XX.XX (number expressed in %) \n ', inline=False)  # noqa: E501
 
-    embed.set_footer(text='If you have any ideas or improvement suggestions please DM your klimate @0xRusowsky')
+    embed.set_footer(
+        text='If you have any ideas or improvement suggestions please DM your klimate @0xRusowsky')
     await ctx.respond(embed=embed)
 
 
