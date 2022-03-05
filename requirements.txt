@@ -1,4 +1,5 @@
 qrcode
-py-cord[speed]
+py-cord[speed]==2.0.0b4
 discord-py-interactions
+pyairtable
 web3
