@@ -11,7 +11,7 @@ from web3 import Web3
 from ..constants import STAKING_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, KLIMA_ADDRESS, \
     BCT_USDC_POOL, KLIMA_BCT_POOL
 from ..utils import get_discord_client, get_polygon_web3, load_abi
-from airtable_utils import alert_db, bond_db, token_db, search_alert, activate_alert, deactivate_alert, \
+from .airtable_utils import alert_db, bond_db, token_db, search_alert, activate_alert, deactivate_alert, \
     fetch_bond_md, fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert, \
     fetch_token_md, active_tokens, update_token_info
 
