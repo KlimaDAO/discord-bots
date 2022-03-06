@@ -8,11 +8,13 @@ from discord.ext import tasks
 from discord.commands import Option
 from web3 import Web3
 
-from ..constants import STAKING_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, \
+from ..constants import STAKING_ADDRESS, SKLIMA_ADDRESS, BCT_ADDRESS, USDC_ADDRESS, KLIMA_ADDRESS, \
     BCT_USDC_POOL, KLIMA_BCT_POOL
 from ..utils import get_discord_client, get_polygon_web3, load_abi
-from .airtable_utils import alert_db, bond_db, search_alert, activate_alert, deactivate_alert, fetch_bond_md, \
-    fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert
+from airtable_utils import alert_db, bond_db, token_db, search_alert, activate_alert, deactivate_alert, \
+    fetch_bond_md, fetch_bond_info, active_bonds, update_bond_info, add_alert, remove_alert, \
+    fetch_token_md, active_tokens, update_token_info
+
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -31,7 +33,7 @@ TOKEN_ABI = load_abi('erc20_token.json')
 # Init global variables
 last_call = datetime.datetime.now() - datetime.timedelta(minutes=10)
 klima_price_usd, bct_price_usd, rebase, staking_rewards = 0, 0, 0, 0
-bond_info = {}
+bond_info, token_info = {}, {}
 
 
 def base_token_price(lp_address, known_address, known_price):
@@ -95,11 +97,6 @@ def fetch_staking_rewards():
         sKLIMA = web3.eth.contract(address=SKLIMA_ADDRESS, abi=SKLIMA_ABI)
         circ_supply = sKLIMA.functions.circulatingSupply().call()
 
-        # print("Staking:")
-        # print(f'   Next epoch rewards: {(100 * rewards / circ_supply):,.2f} %')
-        # print(
-        #     f'   5 days ROI: {(100 * (1 + rewards/circ_supply)**float(15) - 100):,.2f} %')
-        # print('\n')
         rebase = rewards / circ_supply
         staking_rewards = (1 + rewards / circ_supply)**float(15) - 1
         return(rebase, 100 * staking_rewards)
@@ -115,16 +112,16 @@ def contract_info(bond_address, payoutTokenPrice, maxReached=False):
         return(-999, -999, -999)
     else:
         try:
-            # Retrieve bond prices and it's current discount
+            # Retrieve bond price + current discount
             bond = web3.eth.contract(address=bond_address, abi=BOND_ABI)
 
-            # Bonds are priced in BCTs despide the function is called bondPriceInUSD
-            # print('Bonds:')
-            BondPriceUSD = bond.functions.bondPriceInUSD().call() / 1e18
+            # Bonds are priced in BCT/MCO2 despide the function is called bondPriceInUSD
+            if bond_address == '0xb5aF101742EcAe095944F60C384d09453006bFde':
+                BondPriceUSD = bond.functions.bondPriceInUSD().call() / 1e6
+            else:
+                BondPriceUSD = bond.functions.bondPriceInUSD().call() / 1e18
             MaxCap = bond.functions.maxPayout().call() / 1e9
-            Disc = (decimal.Decimal(payoutTokenPrice) - decimal.Decimal(BondPriceUSD)) / decimal.Decimal(payoutTokenPrice)  # noqa: E501
-            # print(f' BondPrice: {BondPriceUSD:,.2f}BCT')
-            # print(f' Discount: {100 * Disc:,.2f} %')
+            Disc = (decimal.Decimal(payoutTokenPrice) - decimal.Decimal(BondPriceUSD)) / decimal.Decimal(BondPriceUSD)  # noqa: E501
             return(payoutTokenPrice, 100 * Disc, MaxCap)
 
         except Exception as e:
@@ -159,6 +156,7 @@ def get_prices():
     global last_call
     global klima_price_usd, bct_price_usd, rebase, staking_rewards, bond_info
     bond_list = active_bonds(bond_db)
+    token_list = active_tokens(token_db)
 
     if datetime.datetime.now() - datetime.timedelta(seconds=120) >= last_call:
         # Retrieve prices
@@ -168,19 +166,37 @@ def get_prices():
         klima_price_usd = base_token_price(
             lp_address=KLIMA_BCT_POOL, known_address=BCT_ADDRESS, known_price=bct_price_usd
         )
-        klima_price_bct = klima_price_usd / bct_price_usd
         last_call = datetime.datetime.now()
 
         # Update staking rewards
         rebase, staking_rewards = fetch_staking_rewards()
 
+        # Update quote token info
+        for t in token_list:
+            pool_address, base_token = fetch_token_md(token_db, t)
+            if base_token == 'USDC':
+                price_usd = base_token_price(lp_address=pool_address, known_address=USDC_ADDRESS, known_price=1)  # noqa: E501
+            elif base_token == 'KLIMA':
+                price_usd = base_token_price(lp_address=pool_address, known_address=KLIMA_ADDRESS, known_price=klima_price_usd)  # noqa: E501
+            print(t, price_usd)
+            try:
+                price_klima = klima_price_usd / price_usd
+            except Exception as e:
+                print(e)
+                price_klima = klima_price_usd
+            update_token_info(token_db, update_token=t, update_price_klima=price_klima, update_price_usd=price_usd)
+            if t == 'USDC':
+                token_info[t] = price_usd
+            else:
+                token_info[t] = price_klima
+
         # Update bond info
         for b in bond_list:
-            address, abi = fetch_bond_md(bond_db, b)
-            is_closed = max_debt_reached(
-                bond_address=Web3.toChecksumAddress(address))
-            price, disc, bond_max = contract_info(bond_address=Web3.toChecksumAddress(address), payoutTokenPrice=klima_price_bct, maxReached=is_closed)  # noqa: E501
+            address, quote_token = fetch_bond_md(bond_db, b)
+            is_closed = max_debt_reached(bond_address=Web3.toChecksumAddress(address))
+            price, disc, bond_max = contract_info(bond_address=Web3.toChecksumAddress(address), payoutTokenPrice=token_info[quote_token], maxReached=is_closed)  # noqa: E501
             update_bond_info(bond_db, update_bond=b, update_price=price, update_disc=float(disc), update_capacity=bond_max, update_debt=is_closed)  # noqa: E501
+            print(b, price, quote_token, token_info[quote_token], f'{disc:,.2f}')
 
     for b in bond_list:
         last_info = fetch_bond_info(bond_db, b)
@@ -286,7 +302,10 @@ async def check_discounts():
                     text='This alert is courtesy of your Klimate @0xRusowsky')
 
                 user = client.get_user(int(alert.user))
-                await user.send(embed=embed)
+                try:
+                    await user.send(embed=embed)
+                except Exception as e:
+                    print(e)
 
 
 @client.slash_command(description="Check live information for every bond type issued by KlimaDAO.")
