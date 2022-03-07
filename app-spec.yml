@@ -121,6 +121,10 @@ workers:
         scope: RUN_AND_BUILD_TIME
         type: SECRET
         value: ${AIRTABLE_API_KEY}
+      - key: DISCORD_WEBHOOK_BROKEN_BOND_ALERT
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ${DISCORD_WEBHOOK_BROKEN_BOND_ALERT}
     image:
       registry_type: DOCR
       repository: discord-bots

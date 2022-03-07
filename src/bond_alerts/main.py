@@ -17,6 +17,7 @@ from .airtable_utils import alert_db, bond_db, token_db, search_alert, activate_
 
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
+WEBHOOK_URL = os.environ['DISCORD_WEBHOOK_BROKEN_BOND_ALERT']
 
 # Initialized Discord client
 client = get_discord_client()
@@ -34,6 +35,9 @@ TOKEN_ABI = load_abi('erc20_token.json')
 last_call = datetime.datetime.now() - datetime.timedelta(minutes=10)
 klima_price_usd, bct_price_usd, rebase, staking_rewards = 0, 0, 0, 0
 bond_info, token_info = {}, {}
+
+global last_alert_times
+last_alert_times = {}
 
 
 def base_token_price(lp_address, known_address, known_price):
@@ -121,7 +125,9 @@ def contract_info(bond_address, payoutTokenPrice, maxReached=False):
             else:
                 BondPriceUSD = bond.functions.bondPriceInUSD().call() / 1e18
             MaxCap = bond.functions.maxPayout().call() / 1e9
-            Disc = (decimal.Decimal(payoutTokenPrice) - decimal.Decimal(BondPriceUSD)) / decimal.Decimal(BondPriceUSD)  # noqa: E501
+            Disc = (
+                decimal.Decimal(payoutTokenPrice) - decimal.Decimal(BondPriceUSD)
+            ) / decimal.Decimal(BondPriceUSD)
             return(payoutTokenPrice, 100 * Disc, MaxCap)
 
         except Exception as e:
@@ -152,6 +158,30 @@ def check_is_worth(staking_rewards, rebase, bondDiscount):
         return(':white_check_mark:', cutoff_discount)
 
 
+def test_bond_payout(bond_name, bond_address, bond_price):
+    try:
+        bond = web3.eth.contract(address=bond_address, abi=BOND_ABI)
+        terms = bond.functions.terms().call()
+        fee = terms[4] / 1e4
+
+        if bond_price < (1 + fee):
+            next_alert = datetime.datetime.now() - datetime.timedelta(seconds=3600 * 8)
+            last_alert = last_alert_times.get(bond_name)
+            print(next_alert, last_alert)
+            if last_alert is None or next_alert >= last_alert:
+                last_alert_times[bond_name] = datetime.datetime.now()
+                msg = f"Broken {bond_name} bond detected!"
+                print(msg)
+                webhook = discord.SyncWebhook.from_url(url=WEBHOOK_URL)
+                webhook.send(msg)
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e)
+        return False
+
+
 def get_prices():
     global last_call
     global klima_price_usd, bct_price_usd, rebase, staking_rewards, bond_info
@@ -175,10 +205,15 @@ def get_prices():
         for t in token_list:
             pool_address, base_token = fetch_token_md(token_db, t)
             if base_token == 'USDC':
-                price_usd = base_token_price(lp_address=pool_address, known_address=USDC_ADDRESS, known_price=1)  # noqa: E501
+                price_usd = base_token_price(
+                    lp_address=pool_address, known_address=USDC_ADDRESS,
+                    known_price=1
+                )
             elif base_token == 'KLIMA':
-                price_usd = base_token_price(lp_address=pool_address, known_address=KLIMA_ADDRESS, known_price=klima_price_usd)  # noqa: E501
-            print(t, price_usd)
+                price_usd = base_token_price(
+                    lp_address=pool_address, known_address=KLIMA_ADDRESS,
+                    known_price=klima_price_usd
+                )
             try:
                 price_klima = klima_price_usd / price_usd
             except Exception as e:
@@ -193,10 +228,22 @@ def get_prices():
         # Update bond info
         for b in bond_list:
             address, quote_token = fetch_bond_md(bond_db, b)
-            is_closed = max_debt_reached(bond_address=Web3.toChecksumAddress(address))
-            price, disc, bond_max = contract_info(bond_address=Web3.toChecksumAddress(address), payoutTokenPrice=token_info[quote_token], maxReached=is_closed)  # noqa: E501
-            update_bond_info(bond_db, update_bond=b, update_price=price, update_disc=float(disc), update_capacity=bond_max, update_debt=is_closed)  # noqa: E501
-            print(b, price, quote_token, token_info[quote_token], f'{disc:,.2f}')
+            address = Web3.toChecksumAddress(address)
+            is_closed = max_debt_reached(bond_address=address)
+
+            bond_price = token_info[quote_token]
+            is_broken = test_bond_payout(b, address, bond_price)
+
+            price, disc, bond_max = contract_info(
+                bond_address=address, payoutTokenPrice=bond_price,
+                maxReached=bool(is_closed * is_broken)
+            )
+            update_bond_info(
+                bond_db, update_bond=b, update_price=price,
+                update_disc=float(disc), update_capacity=bond_max,
+                update_debt=is_closed
+            )
+            print(b, price, quote_token, f'{disc:,.2f}', is_broken)
 
     for b in bond_list:
         last_info = fetch_bond_info(bond_db, b)
