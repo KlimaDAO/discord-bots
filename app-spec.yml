@@ -6,10 +6,14 @@ envs:
     scope: RUN_AND_BUILD_TIME
     type: SECRET
     value: ${POLYGONSCAN_API_KEY}
-  - key: WEB3_INFURA_PROJECT_ID
+  - key: WEB3_PROVIDER_POLYGON_URL
     scope: RUN_AND_BUILD_TIME
     type: SECRET
-    value: ${WEB3_INFURA_PROJECT_ID}
+    value: ${WEB3_PROVIDER_POLYGON_URL}
+  - key: WEB3_PROVIDER_ETH_URL
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: ${WEB3_PROVIDER_ETH_URL}
 name: ${DIGITALOCEAN_APP_NAME}
 region: nyc
 workers:
