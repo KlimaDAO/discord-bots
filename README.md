@@ -67,7 +67,8 @@ The following environment variables must be defined in GitHub Actions:
 These variables must also be defined, and will be used to replace variables in the app-spec.yml file:
 
 - `POLYGONSCAN_API_KEY`
-- `WEB3_INFURA_PROJECT_ID`
+- `WEB3_PROVIDER_ETH_URL`
+- `WEB3_PROVIDER_POLYGON_URL`
 - `DISCORD_BOT_TOKEN_REBASE`
 - `DISCORD_BOT_WEBHOOK_REBASE`
 - `DISCORD_BOT_TOKEN_KLIMA_PRICE`

@@ -5,13 +5,12 @@ from discord.ext import commands
 import json
 from web3 import Web3
 
-INFURA_PROJ_ID = os.environ['WEB3_INFURA_PROJECT_ID']
+PROVIDER_POLYGON_URL = os.environ['WEB3_PROVIDER_POLYGON_URL']
+PROVIDER_ETH_URL = os.environ['WEB3_PROVIDER_ETH_URL']
 
 
 def get_polygon_web3():
-    polygon_mainnet_endpoint = f'https://polygon-mainnet.infura.io/v3/{INFURA_PROJ_ID}'
-
-    web3 = Web3(Web3.HTTPProvider(polygon_mainnet_endpoint))
+    web3 = Web3(Web3.HTTPProvider(PROVIDER_POLYGON_URL))
 
     assert(web3.isConnected())
 
@@ -19,9 +18,7 @@ def get_polygon_web3():
 
 
 def get_eth_web3():
-    ethereum_mainnet_endpoint = f'https://mainnet.infura.io/v3/{INFURA_PROJ_ID}'
-
-    web3_eth = Web3(Web3.HTTPProvider(ethereum_mainnet_endpoint))
+    web3_eth = Web3(Web3.HTTPProvider(PROVIDER_ETH_URL))
 
     assert(web3_eth.isConnected())
 
