@@ -2,6 +2,7 @@ import os
 import json
 import datetime
 import decimal
+import asyncio
 
 import discord
 from discord.ext import tasks
@@ -205,53 +206,102 @@ def get_prices():
     return(klima_price_usd, rebase, staking_rewards, bond_info)
 
 
-# Create a class for the embed
-class PageButton(interactions.Button):
-    def __init__(self, current, pages):
-        super().__init__(
-            style=interactions.ButtonStyle.SECONDARY,
-            label=f"Page {current + 1}/{pages + 1}",
-            disabled=True, custom_id='page'
-        )
-
-
-class Pagination(discord.ui.View):
-    def __init__(self, paginationList):
-        super().__init__(timeout=10)
-        self.value = 0
-        self.pages = len(paginationList) - 1
-        self.paginationList = paginationList
-        self.add_item(PageButton(current=self.value, pages=self.pages))
-        self.message = 0
-
-    async def on_timeout(self):
-        for b in self.children:
-            b.disabled = True
-        await self.message.edit(embed=self.paginationList[self.value], view=self)
-
-    @interactions.Button(label="Prev Page", style=interactions.ButtonStyle.PRIMARY)
-    async def next_page(self, button: interactions.Button, interaction: discord.Interaction):
-        if self.value - 1 < 0:
-            self.value = self.pages
+class Paginator():
+    def __init__(self, client, ctx=None, embeds=None, only=False):
+        self.client = client
+        self.ctx = ctx
+        self.page = 0
+        if embeds is not None:
+            self.max_page = len(embeds) - 1
         else:
-            self.value = self.value - 1
-        for b in self.children:
-            if b.custom_id == 'page':
-                self.remove_item(b)
-                self.add_item(PageButton(current=self.value, pages=self.pages))
-        await interaction.response.edit_message(embed=self.paginationList[self.value], view=self)
+            self.max_page = 0
+        self.pages = len(embeds) - 1
+        self.embeds = embeds
+        self.only = only
+        self.buttons = [
+            interactions.Button(
+                style=interactions.ButtonStyle.PRIMARY,
+                label='Prev Page',
+                custom_id="prev_page"
+            ),
+            interactions.Button(
+                style=interactions.ButtonStyle.PRIMARY,
+                label=f"Page 1 / {self.max_page + 1}",
+                custom_id="page_count",
+                disabled=True
+            ),
+            interactions.Button(
+                style=interactions.ButtonStyle.PRIMARY,
+                label='Next Page',
+                custom_id="next_page"
+            ),
+        ]
+        self.action_row = [interactions.ActionRow(components=self.buttons)]
+        self.message = ""
 
-    @interactions.Button(label="Next Page", style=interactions.ButtonStyle.PRIMARY)
-    async def prev_page(self, button: interactions.Button, interaction: discord.Interaction):
-        if self.value + 1 > self.pages:
-            self.value = 0
+    async def start(self):
+        if not self.message:
+            self.message = await self.ctx.send(embeds=self.embeds[0], components=self.action_row)
         else:
-            self.value = self.value + 1
-        for b in self.children:
-            if b.custom_id == 'page':
-                self.remove_item(b)
-                self.add_item(PageButton(current=self.value, pages=self.pages))
-        await interaction.response.edit_message(embed=self.paginationList[self.value], view=self)
+            await self.message.edit(embeds=self.embeds[self.page])
+
+        async def check(button_ctx):
+            if int(button_ctx.author.user.id) == int(self.ctx.author.user.id):
+                return True
+            else:
+                return False
+
+        while True:
+            try:
+                button_ctx: interactions.ComponentContext = await self.client.wait_for_component(
+                    components=self.buttons, check=check, timeout=10
+                )
+
+                if button_ctx.custom_id == "next_page":
+                    if self.page != self.max_page:
+                        self.page += 1
+                    else:
+                        self.page = 0
+                if button_ctx.custom_id == "prev_page":
+                    if self.page != 0:
+                        self.page -= 1
+                    else:
+                        self.page = self.max_page
+
+                self.buttons[1] = interactions.Button(
+                    style=interactions.ButtonStyle.PRIMARY,
+                    label=f"Page {self.page + 1} / {self.max_page + 1}",
+                    custom_id="page_count",
+                    disabled=True
+                )
+                self.action_row = interactions.ActionRow(components=self.buttons)
+                await button_ctx.edit(embeds=self.embeds[self.page], components=self.action_row)
+
+            except asyncio.TimeoutError:
+                for component in self.buttons:
+                    component.disabled = True
+                self.buttons = [
+                    interactions.Button(
+                        style=interactions.ButtonStyle.PRIMARY,
+                        label='Prev Page',
+                        custom_id="prev_page",
+                        disabled=True
+                    ),
+                    interactions.Button(
+                        style=interactions.ButtonStyle.PRIMARY,
+                        label=f"Page 1 of {len(self.embeds)}",
+                        custom_id="page_count",
+                        disabled=True
+                    ),
+                    interactions.Button(
+                        style=interactions.ButtonStyle.PRIMARY,
+                        label='Next Page',
+                        custom_id="next_page",
+                        disabled=True
+                    ),
+                ]
+                self.action_row = interactions.ActionRow(components=self.buttons)
+                return await self.ctx.send(embeds=self.embeds[self.page], components=self.action_row)
 
 
 @client.event
@@ -308,9 +358,8 @@ async def check_discounts():
                     print(e)
 
 
-@client.subcommand(base="bond_alerts",
-                   name="bonds",
-                   description="Check live information for every bond type issued by KlimaDAO.")
+@client.command(name="bonds",
+                description="Check live information for every bond type issued by KlimaDAO.")
 async def bonds(ctx):
     global klima_price_usd, rebase, staking_rewards, bond_info
     await ctx.defer()
@@ -352,14 +401,12 @@ async def bonds(ctx):
     if len(paginationList) == 1:
         await ctx.followup.send(embed=paginationList[0])
     else:
-        view = Pagination(paginationList=paginationList)
-        await ctx.respond(embed=paginationList[view.value], view=view)
-        view.message = await ctx.interaction.original_message()
+        paginator = Paginator(client=client, ctx=ctx, embeds=paginationList)
+        paginator.start()
 
 
-@client.subcommand(base="bond_alerts",
-                   name="info",
-                   description="Check the available bond types that KlimaDAO offers and that this bot supports.")
+@client.command(name="info",
+                description="Check the available bond types that KlimaDAO offers and that this bot supports.")
 async def info_bonds(ctx):
     if not check_discounts.is_running():
         check_discounts.start()
@@ -378,23 +425,22 @@ async def info_bonds(ctx):
     await ctx.respond(embed=embed)
 
 
-@client.subcommand(base="bond_alerts",
-                   name="create_alert",
-                   description='Create alerts that will be triggered according to bond discount.',
-                   options=[
+@client.command(name="create_alert",
+                description='Create alerts that will be triggered according to bond discount.',
+                options=[
                     interactions.Option(
-                     type=interactions.OptionType.STRING,
-                     name="bond_type",
-                     description="Input the desired bond. Use the /info_bonds command to see all the bond types.",  # noqa: F722,E501
-                     required=True
+                        type=interactions.OptionType.STRING,
+                        name="bond_type",
+                        description="Input the desired bond. Use the /info_bonds command to see all the bond types.",  # noqa: F722,E501
+                        required=True
                     ),
                     interactions.Option(
-                     type=interactions.OptionType.FLOAT,
-                     name="min_discount",
-                     description="Input the min_discount threshold. Must be a number, without '%' sign.",  # noqa: F722,E501
-                     required=True
+                        type=interactions.OptionType.FLOAT,
+                        name="min_discount",
+                        description="Input the min_discount threshold. Must be a number, without '%' sign.",  # noqa: F722,E501
+                        required=True
                     )
-                    ])
+                ])
 async def create_alert(ctx, bond_type, min_discount):
     bond_list = active_bonds(bond_db)
     bond_str = ""
@@ -421,23 +467,22 @@ async def create_alert(ctx, bond_type, min_discount):
         await ctx.respond(embed=embed)
 
 
-@client.subcommand(base="bond_alerts",
-                   name="delete_alert",
-                   description='Delete an existing bond alert',
-                   options=[
+@client.command(name="delete_alert",
+                description='Delete an existing bond alert',
+                options=[
                     interactions.Option(
-                     type=interactions.OptionType.STRING,
-                     name="bond_type",
-                     description="Input the desired bond. Use the /info_bonds command to see all the bond types.",  # noqa: F722,E501
-                     required=True
+                        type=interactions.OptionType.STRING,
+                        name="bond_type",
+                        description="Input the desired bond. Use the /info_bonds command to see all the bond types.",  # noqa: F722,E501
+                        required=True
                     ),
                     interactions.Option(
-                     type=interactions.OptionType.FLOAT,
-                     name="min_discount",
-                     description="Input the min_discount threshold. Must be a number, without '%' sign.",  # noqa: F722,E501
-                     required=True
+                        type=interactions.OptionType.FLOAT,
+                        name="min_discount",
+                        description="Input the min_discount threshold. Must be a number, without '%' sign.",  # noqa: F722,E501
+                        required=True
                     )
-                   ])
+                ])
 async def delete_alert(ctx, bond_type, min_discount):
     await ctx.defer()
 
@@ -455,9 +500,8 @@ async def delete_alert(ctx, bond_type, min_discount):
         await ctx.respond(embed=embed)
 
 
-@client.subcommand(base="bond_alerts",
-                   name="delete_all",
-                   description='Delete all the previously configured bond alerts')
+@client.command(name="delete_all",
+                description='Delete all the previously configured bond alerts')
 async def delete_all(ctx):
     await ctx.defer()
 
@@ -480,9 +524,8 @@ async def delete_all(ctx):
         await ctx.respond(embed=embed)
 
 
-@client.subcommand(base="bond_alerts",
-                   name="my_alerts",
-                   description='Check all the already existing alerts')
+@client.command(name="my_alerts",
+                description='Check all the already existing alerts')
 async def my_alerts(ctx):
     await ctx.defer()
 
@@ -500,9 +543,8 @@ async def my_alerts(ctx):
         await ctx.respond(embed=embed)
 
 
-@client.subcommand(base="bond_alerts",
-                   name="help",
-                   description='Check all the commands and a brief explanation on how to use them')
+@client.command(name="help",
+                description='Check all the commands and a brief explanation on how to use them')
 async def help_bonds(ctx):
     embed = discord.Embed(title='Help Panel', description='Here you can see a list with all the KlimaDAO Alerts commands and a brief explanation on how to use them.', colour=0xFFFFFF)  # noqa: E501
     embed.add_field(name=':small_blue_diamond: /info_bonds', value='Returns a list with the names of the partners, the bond types and the payout tokens that KlimaDAO offers.', inline=False)  # noqa: E501
