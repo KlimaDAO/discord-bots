@@ -124,16 +124,16 @@ async def update_info():
         return
 
     if staking_reward is not None and circulating_supply is not None and rebases_per_day is not None:
-        # ie, ROI % in this rebase
+        # ie, reward % in this rebase
         staking_rebase = staking_reward / circulating_supply
-        # ie, ROI % in the next 5 days
-        five_day_roi = math.pow(1 + staking_rebase, 5 * rebases_per_day) - 1
-        # ie, yearly APY
-        staking_apy = math.pow(1 + staking_rebase, 365 * rebases_per_day)
+        # ie, reward % in the next 5 days
+        five_day_rewards = math.pow(1 + staking_rebase, 5 * rebases_per_day) - 1
+        # ie, annualized reward %
+        staking_akr = math.pow(1 + staking_rebase, 365 * rebases_per_day)
     else:
         return
 
-    yield_text = f'{five_day_roi*100:,.2f}% 5 Day Yield'
+    yield_text = f'{five_day_rewards*100:,.2f}% 5 Day Rewards'
     print(yield_text)
 
     success = await update_nickname(client, yield_text)
@@ -141,7 +141,7 @@ async def update_info():
         return
 
     success = await update_presence(
-        client, f'{staking_apy*100:,.2f}% APY', 'playing'
+        client, f'{staking_akr*100:,.2f}% AKR', 'playing'
     )
     if not success:
         return
