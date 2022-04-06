@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - ./bct_price
+  # TODO: fix interactions for bond discount bot
+  # - ./bond_alerts
+  - ./c3_price
+  - ./klima_price
+  - ./mco2_price
+  - ./moss_price
+  - ./nbo_price
+  - ./nct_price
+  - ./next_rebase
+  - ./staking_rewards
+  - ./supply_index
+  - ./ubo_price
+
+namespace: discord-bots
+
+secretGenerator:
+  - name: discord-bots-secret
+    env: secret.properties

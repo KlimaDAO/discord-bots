@@ -21,7 +21,6 @@ klima_abi = load_abi('erc20_token.json')
 def get_info():
     klima_price = klima_usdc_price(web3)
     supply = token_supply(web3, KLIMA_ADDRESS, klima_abi, KLIMA_DECIMALS)
-    print(klima_price)
 
     return(klima_price, supply)
 

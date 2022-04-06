@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot
+spec:
+  template:
+    spec:
+      containers:
+      - name: bot
+        args: ["src.ubo_price.main"]
+        env:
+        - name: DISCORD_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: discord-bots-secret
+              key: DISCORD_BOT_TOKEN_UBO_PRICE

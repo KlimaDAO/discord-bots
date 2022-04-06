@@ -30,6 +30,7 @@ def klima_usdc_price(web3):
         USDC_DECIMALS - KLIMA_DECIMALS
     )
 
+
 def token_supply(web3, token_address, abi, decimals):
     '''
     Compute the total supply of the specified ERC-20 token at `token_address` with `abi` and the correct `decimals`

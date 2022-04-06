@@ -2,9 +2,8 @@ import os
 
 from discord.ext import tasks
 
-from ..constants import MCO2_ADDRESS, USDC_DECIMALS, \
-                        MCO2_DECIMALS, MCO2_USDC_POOL
-from ..contract_info import token_supply, uni_v2_pool_price
+from ..constants import MCO2_ADDRESS, MCO2_DECIMALS, KLIMA_DECIMALS, KLIMA_MCO2_POOL
+from ..contract_info import token_supply, uni_v2_pool_price, klima_usdc_price
 from ..utils import get_discord_client, get_eth_web3, \
                     get_polygon_web3, load_abi, \
                     update_nickname, update_presence
@@ -31,7 +30,8 @@ async def on_ready():
 
 @tasks.loop(seconds=300)
 async def update_info():
-    price = uni_v2_pool_price(web3, MCO2_USDC_POOL, USDC_DECIMALS)
+    klima_price = klima_usdc_price(web3)
+    price = klima_price * uni_v2_pool_price(web3, KLIMA_MCO2_POOL, KLIMA_DECIMALS)
     supply = token_supply(web3_eth, MCO2_ADDRESS, mco2_abi, MCO2_DECIMALS)
 
     if price is not None and supply is not None:

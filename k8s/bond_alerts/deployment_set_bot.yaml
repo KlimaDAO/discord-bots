@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot
+spec:
+  template:
+    spec:
+      containers:
+      - name: bot
+        args: ["src.bond_alerts.main"]
+        env:
+        - name: DISCORD_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: discord-bots-secret
+              key: DISCORD_BOT_TOKEN_BOND_ALERTS
+        - name: DISCORD_WEBHOOK_BROKEN_BOND_ALERT
+          valueFrom:
+            secretKeyRef:
+              name: discord-bots-secret
+              key: DISCORD_WEBHOOK_BROKEN_BOND_ALERT
+        - name: AIRTABLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: discord-bots-secret
+              key: AIRTABLE_API_KEY

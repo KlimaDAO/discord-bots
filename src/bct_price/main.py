@@ -17,6 +17,7 @@ web3 = get_polygon_web3()
 # Load ABIs
 bct_abi = load_abi('carbon_pool.json')
 
+
 @client.event
 async def on_ready():
     print('Logged in as {0.user}'.format(client))
