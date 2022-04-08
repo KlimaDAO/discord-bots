@@ -1,13 +1,14 @@
 from .utils import load_abi
+from .constants import KLIMA_USDC_POOL, USDC_DECIMALS, KLIMA_DECIMALS
 
 uni_v2_abi = load_abi('uni_v2_pool.json')
 
 
-def uni_v2_pool_price(web3, pool_address, decimals, basePrice=1):
+def uni_v2_pool_price(web3, pool_address, decimals, base_price=1):
     '''
     Calculate the price of a SushiSwap liquidity pool, using the provided
     pool address, decimals of the first token, and multiplied by
-    basePrice if provided for computing multiple pool hops.
+    base_price if provided for computing multiple pool hops.
     '''
     pool_contract = web3.eth.contract(
         address=pool_address,
@@ -16,12 +17,18 @@ def uni_v2_pool_price(web3, pool_address, decimals, basePrice=1):
 
     try:
         reserves = pool_contract.functions.getReserves().call()
-        token_price = reserves[0] * basePrice * 10**decimals / reserves[1]
+        token_price = reserves[0] * base_price * 10**decimals / reserves[1]
 
         return token_price
     except Exception:
         return None
 
+
+def klima_usdc_price(web3):
+    return uni_v2_pool_price(
+        web3, KLIMA_USDC_POOL,
+        USDC_DECIMALS - KLIMA_DECIMALS
+    )
 
 def token_supply(web3, token_address, abi, decimals):
     '''

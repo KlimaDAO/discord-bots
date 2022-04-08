@@ -2,8 +2,8 @@ import os
 
 from discord.ext import tasks
 
-from ..constants import MOSS_ADDRESS, USDC_DECIMALS, \
-                        MOSS_DECIMALS, MOSS_USDC_POOL
+from ..constants import C3_ADDRESS, FRAX_DECIMALS, \
+                        C3_DECIMALS, FRAX_C3_POOL
 from ..contract_info import token_supply, uni_v2_pool_price
 from ..utils import get_discord_client, get_eth_web3, \
                     get_polygon_web3, load_abi, \
@@ -19,7 +19,7 @@ web3 = get_polygon_web3()
 web3_eth = get_eth_web3()
 
 # Load ABI
-moss_abi = load_abi('erc20_token.json')
+c3_abi = load_abi('erc20_token.json')
 
 
 @client.event
@@ -31,11 +31,11 @@ async def on_ready():
 
 @tasks.loop(seconds=300)
 async def update_info():
-    price = 1 / uni_v2_pool_price(web3, MOSS_USDC_POOL, -1 * USDC_DECIMALS)
-    supply = token_supply(web3, MOSS_ADDRESS, moss_abi, MOSS_DECIMALS)
+    price = uni_v2_pool_price(web3, FRAX_C3_POOL, FRAX_DECIMALS - C3_DECIMALS)
+    supply = token_supply(web3, C3_ADDRESS, c3_abi, C3_DECIMALS)
 
     if price is not None and supply is not None:
-        price_text = f'${price:,.2f} MOSS'
+        price_text = f'${price:,.3f} C3'
 
         print(price_text)
 
@@ -43,7 +43,7 @@ async def update_info():
         if not success:
             return
 
-        success = await update_presence(client, f'Supply: {supply/1e6:,.2f}M')
+        success = await update_presence(client, f'Supply: {supply/1e9:,.2f}B')
         if not success:
             return
 

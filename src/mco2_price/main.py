@@ -2,8 +2,8 @@ import os
 
 from discord.ext import tasks
 
-from ..constants import MOSS_ADDRESS, USDC_DECIMALS, \
-                        MOSS_DECIMALS, MOSS_USDC_POOL
+from ..constants import MCO2_ADDRESS, USDC_DECIMALS, \
+                        MCO2_DECIMALS, MCO2_USDC_POOL
 from ..contract_info import token_supply, uni_v2_pool_price
 from ..utils import get_discord_client, get_eth_web3, \
                     get_polygon_web3, load_abi, \
@@ -19,7 +19,7 @@ web3 = get_polygon_web3()
 web3_eth = get_eth_web3()
 
 # Load ABI
-moss_abi = load_abi('erc20_token.json')
+mco2_abi = load_abi('carbon_pool.json')
 
 
 @client.event
@@ -31,11 +31,11 @@ async def on_ready():
 
 @tasks.loop(seconds=300)
 async def update_info():
-    price = 1 / uni_v2_pool_price(web3, MOSS_USDC_POOL, -1 * USDC_DECIMALS)
-    supply = token_supply(web3, MOSS_ADDRESS, moss_abi, MOSS_DECIMALS)
+    price = uni_v2_pool_price(web3, MCO2_USDC_POOL, USDC_DECIMALS)
+    supply = token_supply(web3_eth, MCO2_ADDRESS, mco2_abi, MCO2_DECIMALS)
 
     if price is not None and supply is not None:
-        price_text = f'${price:,.2f} MOSS'
+        price_text = f'${price:,.2f} MCO2'
 
         print(price_text)
 
