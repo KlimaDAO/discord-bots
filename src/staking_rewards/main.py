@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 import os
 import json
 import math
@@ -58,48 +57,14 @@ def get_circ_supply():
         return None
 
 
-def get_block_30_days_ago():
-    '''Fetch the block number that was closest to 30 days ago from PolygonScan'''
-    days_ago = datetime.today() - timedelta(days=30)
-    timestamp = int(days_ago.timestamp())
-
-    resp = requests.get(
-        f'https://api.polygonscan.com/api?module=block&action=getblocknobytime&timestamp={timestamp}&closest=before&apikey={SCAN_API_KEY}'  # noqa: E501
-    )
-
-    try:
-        block_num = int(
-            json.loads(resp.content)['result']
-        )
-    except (TypeError, json.decoder.JSONDecodeError, ValueError):
-        traceback.print_exc()
-        block_num = None
-
-    return block_num
-
-
 def get_rebases_per_day(blocks_per_rebase):
     '''
     Calculates the average number of rebases per day based on the average
     block production time for the previous 1 million blocks
     '''
-    block_30_days_ago = get_block_30_days_ago()
-
-    if block_30_days_ago is None:
-        return None
-
-    try:
-        latest_block = web3.eth.get_block('latest')
-        latest_block_num = latest_block['number']
-        latest_block_time = latest_block['timestamp']
-
-        prev_block_time = web3.eth.get_block(block_30_days_ago)['timestamp']
-    except ValueError:
-        traceback.print_exc()
-        return None
-
-    block_diff = latest_block_num - block_30_days_ago
-    avg_block_secs = (latest_block_time - prev_block_time) / block_diff
+    avg_block_secs = float(json.loads(
+        requests.get('https://klimadao.finance/api/block-rate').content)['blockRate30Day']
+    )
 
     secs_per_rebase = blocks_per_rebase * avg_block_secs
 

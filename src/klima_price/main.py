@@ -2,9 +2,8 @@ import os
 
 from discord.ext import tasks
 
-from ..contract_info import uni_v2_pool_price, token_supply
-from ..constants import BCT_USDC_POOL, KLIMA_ADDRESS, \
-                        KLIMA_BCT_POOL, KLIMA_DECIMALS, USDC_DECIMALS
+from ..contract_info import klima_usdc_price, token_supply
+from ..constants import KLIMA_ADDRESS, KLIMA_DECIMALS
 from ..utils import get_discord_client, \
                     get_polygon_web3, load_abi, update_nickname, update_presence
 
@@ -20,12 +19,7 @@ klima_abi = load_abi('erc20_token.json')
 
 
 def get_info():
-    bct_price = uni_v2_pool_price(web3, BCT_USDC_POOL, USDC_DECIMALS)
-    klima_price = uni_v2_pool_price(
-        web3, KLIMA_BCT_POOL,
-        # Multiple by -1 because KLIMA is the denominator
-        -1 * KLIMA_DECIMALS, basePrice=bct_price
-    )
+    klima_price = klima_usdc_price(web3)
     supply = token_supply(web3, KLIMA_ADDRESS, klima_abi, KLIMA_DECIMALS)
 
     return(klima_price, supply)

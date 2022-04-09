@@ -1,10 +1,12 @@
 import os
+
 from discord.ext import tasks
 
-from ..constants import BCT_ADDRESS, BCT_KLIMA_POOL, KLIMA_DECIMALS, BCT_DECIMALS
-from ..contract_info import uni_v2_pool_price, token_supply, klima_usdc_price
-from ..utils import get_polygon_web3, \
-                    get_discord_client, load_abi, update_nickname, update_presence
+from ..constants import MCO2_ADDRESS, MCO2_DECIMALS, KLIMA_DECIMALS, KLIMA_MCO2_POOL
+from ..contract_info import token_supply, uni_v2_pool_price, klima_usdc_price
+from ..utils import get_discord_client, get_eth_web3, \
+                    get_polygon_web3, load_abi, \
+                    update_nickname, update_presence
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -13,9 +15,10 @@ client = get_discord_client()
 
 # Initialize web3
 web3 = get_polygon_web3()
+web3_eth = get_eth_web3()
 
-# Load ABIs
-bct_abi = load_abi('carbon_pool.json')
+# Load ABI
+mco2_abi = load_abi('carbon_pool.json')
 
 
 @client.event
@@ -28,14 +31,11 @@ async def on_ready():
 @tasks.loop(seconds=300)
 async def update_info():
     klima_price = klima_usdc_price(web3)
-    price = klima_price / uni_v2_pool_price(
-        web3, BCT_KLIMA_POOL,
-        KLIMA_DECIMALS - BCT_DECIMALS
-    )
-    supply = token_supply(web3, BCT_ADDRESS, bct_abi, BCT_DECIMALS)
+    price = klima_price * uni_v2_pool_price(web3, KLIMA_MCO2_POOL, KLIMA_DECIMALS)
+    supply = token_supply(web3_eth, MCO2_ADDRESS, mco2_abi, MCO2_DECIMALS)
 
     if price is not None and supply is not None:
-        price_text = f'${price:,.2f} BCT'
+        price_text = f'${price:,.2f} MCO2'
 
         print(price_text)
 
@@ -43,11 +43,9 @@ async def update_info():
         if not success:
             return
 
-        success = await update_presence(
-            client,
-            f'Supply: {supply/1e6:,.1f}M'
-        )
+        success = await update_presence(client, f'Supply: {supply/1e6:,.2f}M')
         if not success:
             return
+
 
 client.run(BOT_TOKEN)

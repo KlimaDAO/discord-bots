@@ -1,7 +1,7 @@
 import os
 from discord.ext import tasks
 
-from ..constants import BCT_ADDRESS, BCT_KLIMA_POOL, KLIMA_DECIMALS, BCT_DECIMALS
+from ..constants import NBO_ADDRESS, KLIMA_NBO_POOL, KLIMA_DECIMALS, NBO_DECIMALS
 from ..contract_info import uni_v2_pool_price, token_supply, klima_usdc_price
 from ..utils import get_polygon_web3, \
                     get_discord_client, load_abi, update_nickname, update_presence
@@ -15,7 +15,7 @@ client = get_discord_client()
 web3 = get_polygon_web3()
 
 # Load ABIs
-bct_abi = load_abi('carbon_pool.json')
+nbo_abi = load_abi('carbon_pool.json')
 
 
 @client.event
@@ -28,14 +28,14 @@ async def on_ready():
 @tasks.loop(seconds=300)
 async def update_info():
     klima_price = klima_usdc_price(web3)
-    price = klima_price / uni_v2_pool_price(
-        web3, BCT_KLIMA_POOL,
-        KLIMA_DECIMALS - BCT_DECIMALS
+    price = klima_price * uni_v2_pool_price(
+        web3, KLIMA_NBO_POOL,
+        KLIMA_DECIMALS
     )
-    supply = token_supply(web3, BCT_ADDRESS, bct_abi, BCT_DECIMALS)
+    supply = token_supply(web3, NBO_ADDRESS, nbo_abi, NBO_DECIMALS)
 
     if price is not None and supply is not None:
-        price_text = f'${price:,.2f} BCT'
+        price_text = f'${price:,.2f} NBO'
 
         print(price_text)
 

@@ -20,3 +20,19 @@ jobs:
           # exclude: "src/ignoreme.py"
           max-line-length: "120"
           path: "src"
+  validate-k8s:
+    runs-on: ubuntu-latest
+    name: Validate k8s manifests
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: "4.5.4"
+      - name: Kustomize
+        run: kustomize build k8s > /tmp/kustomized.yaml
+      - uses: azure/k8s-lint@v1
+        with:
+          manifests: |
+            /tmp/kustomized.yaml

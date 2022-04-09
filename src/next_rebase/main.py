@@ -11,7 +11,7 @@ from ..constants import STAKING_ADDRESS
 from ..utils import get_discord_client, get_polygon_web3, load_abi, update_nickname, update_presence
 
 
-BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN_REBASE"]
+BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 SCAN_API_KEY = os.environ['POLYGONSCAN_API_KEY']
 
 REBASER_ROLE_ID = '912771496122916905'
