@@ -28,13 +28,15 @@ async def on_ready():
 @tasks.loop(seconds=300)
 async def update_info():
     klima_price = klima_usdc_price(web3)
-    price = klima_price / uni_v2_pool_price(
+    token_price = uni_v2_pool_price(
         web3, BCT_KLIMA_POOL,
         KLIMA_DECIMALS - BCT_DECIMALS
     )
+
     supply = token_supply(web3, BCT_ADDRESS, bct_abi, BCT_DECIMALS)
 
-    if price is not None and supply is not None:
+    if klima_price is not None and token_price is not None and supply is not None:
+        price = klima_price / token_price
         price_text = f'${price:,.2f} BCT'
 
         print(price_text)

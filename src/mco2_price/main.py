@@ -31,10 +31,11 @@ async def on_ready():
 @tasks.loop(seconds=300)
 async def update_info():
     klima_price = klima_usdc_price(web3)
-    price = klima_price * uni_v2_pool_price(web3, KLIMA_MCO2_POOL, KLIMA_DECIMALS)
+    token_price = uni_v2_pool_price(web3, KLIMA_MCO2_POOL, KLIMA_DECIMALS)
     supply = token_supply(web3_eth, MCO2_ADDRESS, mco2_abi, MCO2_DECIMALS)
 
-    if price is not None and supply is not None:
+    if klima_price is not None and token_price is not None and supply is not None:
+        price = klima_price * token_price
         price_text = f'${price:,.2f} MCO2'
 
         print(price_text)
