@@ -1,5 +1,6 @@
 qrcode
 py-cord[speed]==2.0.0b4
 discord-py-interactions
+subgrounds==0.1.1
 pyairtable
 web3
