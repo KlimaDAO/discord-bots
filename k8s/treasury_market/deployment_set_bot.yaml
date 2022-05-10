@@ -7,10 +7,10 @@ spec:
     spec:
       containers:
       - name: bot
-        args: ["src.supply_index.main"]
+        args: ["src.treasury_market.main"]
         env:
         - name: DISCORD_BOT_TOKEN
           valueFrom:
             secretKeyRef:
               name: discord-bots-secret
-              key: DISCORD_BOT_TOKEN_SUPPLY_INDEX
+              key: DISCORD_BOT_TOKEN_TREASURY_MARKET
