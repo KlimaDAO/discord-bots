@@ -10,6 +10,7 @@ from .constants import KLIMA_PROTOCOL_SUBGRAPH
 PROVIDER_POLYGON_URL = os.environ['WEB3_PROVIDER_POLYGON_URL']
 PROVIDER_ETH_URL = os.environ['WEB3_PROVIDER_ETH_URL']
 
+
 def get_polygon_web3():
     web3 = Web3(Web3.HTTPProvider(PROVIDER_POLYGON_URL))
 
