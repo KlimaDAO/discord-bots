@@ -5,9 +5,10 @@ from discord.ext import commands
 import json
 from web3 import Web3
 
+from .constants import KLIMA_PROTOCOL_SUBGRAPH
+
 PROVIDER_POLYGON_URL = os.environ['WEB3_PROVIDER_POLYGON_URL']
 PROVIDER_ETH_URL = os.environ['WEB3_PROVIDER_ETH_URL']
-
 
 def get_polygon_web3():
     web3 = Web3(Web3.HTTPProvider(PROVIDER_POLYGON_URL))
@@ -78,3 +79,14 @@ async def update_presence(client, text, type='watching'):
         return True
     except discord.errors.HTTPException:
         return False
+
+def get_last_metric(sg):
+     kpm = sg.load_subgraph(KLIMA_PROTOCOL_SUBGRAPH)
+
+     last_metric = kpm.Query.protocolMetrics(
+         orderBy=kpm.ProtocolMetric.timestamp,
+         orderDirection='desc',
+         first=1
+     )
+
+     return last_metric

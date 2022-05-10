@@ -16,6 +16,7 @@ resources:
   - ./staking_rewards
   - ./supply_index
   - ./ubo_price
+  - ./runway
 
 namespace: discord-bots
 
