@@ -7,6 +7,7 @@ resources:
   # TODO: fix interactions for bond discount bot
   # - ./bond_alerts
   - ./c3_price
+  - ./index
   - ./klima_price
   - ./mco2_price
   - ./moss_price
@@ -14,7 +15,9 @@ resources:
   - ./nct_price
   - ./next_rebase
   - ./staking_rewards
-  - ./supply_index
+  - ./supply_cc
+  - ./treasury_carbon
+  - ./treasury_market
   - ./ubo_price
   - ./runway
 

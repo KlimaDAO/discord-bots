@@ -80,13 +80,14 @@ async def update_presence(client, text, type='watching'):
     except discord.errors.HTTPException:
         return False
 
+
 def get_last_metric(sg):
-     kpm = sg.load_subgraph(KLIMA_PROTOCOL_SUBGRAPH)
+    kpm = sg.load_subgraph(KLIMA_PROTOCOL_SUBGRAPH)
 
-     last_metric = kpm.Query.protocolMetrics(
-         orderBy=kpm.ProtocolMetric.timestamp,
-         orderDirection='desc',
-         first=1
-     )
+    last_metric = kpm.Query.protocolMetrics(
+        orderBy=kpm.ProtocolMetric.timestamp,
+        orderDirection='desc',
+        first=1
+    )
 
-     return last_metric
+    return last_metric
