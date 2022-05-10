@@ -15,9 +15,7 @@ client = get_discord_client()
 sg = Subgrounds()
 def get_runway():
      last_metric = get_last_metric(sg)
-
-     runway =  sg.query([last_metric.runwayCurrent])
-     timestamp =  sg.query([last_metric.timestamp])
+     runway, timestamp = sg.query([last_metric.runwayCurrent, last_metric.timestamp])
 
      return runway, timestamp
 
