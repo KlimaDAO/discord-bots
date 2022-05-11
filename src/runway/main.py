@@ -1,14 +1,16 @@
-from datetime import datetime, timezone
 import os
 from discord.ext import tasks
 
 from subgrounds.subgrounds import Subgrounds
 
-from ..constants import MCO2_ADDRESS, MCO2_DECIMALS, BCT_ADDRESS, BCT_DECIMALS, \
-                        NCT_ADDRESS, NCT_DECIMALS, NBO_ADDRESS, NBO_DECIMALS, UBO_ADDRESS, UBO_DECIMALS
+from ..constants import MCO2_ADDRESS, MCO2_DECIMALS,\
+    BCT_ADDRESS, BCT_DECIMALS, \
+    NCT_ADDRESS, NCT_DECIMALS, NBO_ADDRESS, \
+    NBO_DECIMALS, UBO_ADDRESS, UBO_DECIMALS
 from ..contract_info import token_supply
 from ..utils import get_discord_client, \
-                    get_polygon_web3, get_eth_web3, load_abi, update_nickname, update_presence, get_last_metric
+    get_polygon_web3, get_eth_web3, load_abi, \
+    update_nickname, update_presence, get_last_metric
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -24,16 +26,19 @@ client = get_discord_client()
 
 sg = Subgrounds()
 
+
 def get_info():
-     runway = get_runway()
-     total_carbon_supply = get_total_carbon_supply()
-     return runway, total_carbon_supply
+    runway = get_runway()
+    total_carbon_supply = get_total_carbon_supply()
+    return runway, total_carbon_supply
+
 
 def get_runway():
-     last_metric = get_last_metric(sg)
-     runway = sg.query([last_metric.runwayCurrent])
+    last_metric = get_last_metric(sg)
+    runway = sg.query([last_metric.runwayCurrent])
 
-     return runway
+    return runway
+
 
 def get_total_carbon_supply():
     try:
@@ -48,6 +53,7 @@ def get_total_carbon_supply():
     except Exception:
         # Exception will occur if any of the supply values are None
         return None
+
 
 @client.event
 async def on_ready():
@@ -67,7 +73,11 @@ async def update_info():
         if not success:
             return
 
-        success = await update_presence(client, f'Total carbon supply: {total_carbon_supply/1e6:,.1f}M')
+        success = await update_presence(
+            client,
+            f'On-Chain CO2: {total_carbon_supply/1e6:,.1f}Mt',
+            type='playing'
+        )
         if not success:
             return
 
