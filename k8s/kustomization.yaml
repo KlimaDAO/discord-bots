@@ -19,6 +19,7 @@ resources:
   - ./treasury_carbon
   - ./treasury_market
   - ./ubo_price
+  - ./runway
 
 namespace: discord-bots
 

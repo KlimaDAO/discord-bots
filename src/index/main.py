@@ -55,7 +55,10 @@ async def update_info():
         if not success:
             return
 
-        success = await update_presence(client, f'1 wsKLIMA Value: ${price*index:,.2f}')
+        success = await update_presence(
+            client,
+            f'wsKLIMA Value: ${price*index:,.2f}',
+            type='playing')
         if not success:
             return
 
