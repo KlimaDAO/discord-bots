@@ -44,4 +44,3 @@ DAO_WALLET_ADDRESS = Web3.toChecksumAddress('0x65a5076c0ba74e5f3e069995dc3dab9d1
 KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
 KLIMA_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-bridged-carbon'
 KLIMA_BONDS_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-bonds'
-
