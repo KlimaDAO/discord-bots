@@ -21,6 +21,7 @@ resources:
   - ./ubo_price
   - ./runway
   - ./retirement_fee_info
+  - ./dao_income
 
 namespace: discord-bots
 

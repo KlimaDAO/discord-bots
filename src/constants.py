@@ -38,7 +38,10 @@ USDC_NCT_POOL = Web3.toChecksumAddress('0xdb995f975f1bfc3b2157495c47e4efb31196b2
 STAKING_ADDRESS = Web3.toChecksumAddress('0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d')
 DISTRIBUTOR_ADDRESS = Web3.toChecksumAddress('0x4cC7584C3f8FAABf734374ef129dF17c3517e9cB')
 SKLIMA_ADDRESS = Web3.toChecksumAddress('0xb0C22d8D350C67420f06F48936654f567C73E8C8')
+DAO_WALLET_ADDRESS = Web3.toChecksumAddress('0x65a5076c0ba74e5f3e069995dc3dab9d197d995c')
 
 # Subgraphs
 KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
 KLIMA_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-bridged-carbon'
+KLIMA_BONDS_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-bonds'
+
