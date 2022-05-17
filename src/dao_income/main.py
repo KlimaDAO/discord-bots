@@ -71,7 +71,7 @@ def get_todays_dao_income(sg, todayts):
 
         return income_sum
 
-    except Exception as e:
+    except Exception:
         return None
 
 

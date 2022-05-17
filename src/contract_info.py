@@ -49,8 +49,8 @@ def token_supply(web3, token_address, abi, decimals):
 
 def balance_of(web3, token_address, abi, decimals, address_to_check):
     '''
-    Compute the balance for specific `address_to_check` 
-    of the specified ERC-20 token at `token_address` 
+    Compute the balance for specific `address_to_check`
+    of the specified ERC-20 token at `token_address`
     with `abi` and the correct `decimals`
     '''
     contract = web3.eth.contract(
