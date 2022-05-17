@@ -41,3 +41,4 @@ SKLIMA_ADDRESS = Web3.toChecksumAddress('0xb0C22d8D350C67420f06F48936654f567C73E
 
 # Subgraphs
 KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
+KLIMA_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-polygon-bridged-carbon'
