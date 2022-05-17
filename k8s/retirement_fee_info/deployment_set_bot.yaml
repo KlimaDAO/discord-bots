@@ -7,10 +7,10 @@ spec:
     spec:
       containers:
       - name: bot
-        args: ["src.retirement_info.main"]
+        args: ["src.retirement_fee_info.main"]
         env:
         - name: DISCORD_BOT_TOKEN
           valueFrom:
             secretKeyRef:
               name: discord-bots-secret
-              key: DISCORD_BOT_TOKEN_RETIREMENT_INFO
+              key: DISCORD_BOT_TOKEN_RETIREMENT_FEE_INFO

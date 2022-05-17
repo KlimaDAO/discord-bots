@@ -4,10 +4,10 @@ kind: Kustomization
 resources:
   - ../base
 
-namePrefix: retirement-info-
+namePrefix: retirement-fee-info-
 
 commonLabels:
-  bot: retirement-info
+  bot: retirement-fee-info
 
 patchesStrategicMerge:
   - deployment_set_bot.yaml

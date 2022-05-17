@@ -27,13 +27,13 @@ def get_info():
     currentOffset = offsets[counter]
 
     seven_days_ago_timestamp = get_current_date_timestamp() - SEVEN_DAYS_IN_SECONDS
-    weekly_total_amount, weekly_offset_amount, weekly_offset_fee = get_weekly_retirements(sg, seven_days_ago_timestamp, currentOffset)
+    weekly_total_fee, weekly_offset_amount, weekly_offset_fee = get_weekly_retirement_fees(sg, seven_days_ago_timestamp, currentOffset)
 
     counter+=1
     if counter == len(offsets):
         counter=0
 
-    return weekly_total_amount, weekly_offset_amount, weekly_offset_fee, currentOffset
+    return weekly_total_fee, weekly_offset_amount, weekly_offset_fee, currentOffset
 
 
 def get_current_date_timestamp():
@@ -44,7 +44,7 @@ def get_current_date_timestamp():
     return current_date_timestamp
 
 
-def get_weekly_retirements(sg, seven_days_ago_timestamp, offset):
+def get_weekly_retirement_fees(sg, seven_days_ago_timestamp, offset):
     try:
         kbm = sg.load_subgraph(KLIMA_CARBON_SUBGRAPH)
 
@@ -59,17 +59,17 @@ def get_weekly_retirements(sg, seven_days_ago_timestamp, offset):
         key = list(weekly_retirement_response[0].keys())[0]
         weekly_retirements = weekly_retirement_response[0][key]
 
-        weekly_total_retirement_amount = 0
+        weekly_total_retirement_fee = 0
 
         weekly_offset_retirement_amount = 0
         weekly_offset_retirement_fee = 0
         for retirement in weekly_retirements:
-            weekly_total_retirement_amount += retirement["amount"]
+            weekly_total_retirement_fee += retirement["feeAmount"]
             if offset == retirement["token"]:
                 weekly_offset_retirement_amount += retirement["amount"]
                 weekly_offset_retirement_fee += retirement["feeAmount"]
 
-        return weekly_total_retirement_amount, weekly_offset_retirement_amount, weekly_offset_retirement_fee
+        return weekly_total_retirement_fee, weekly_offset_retirement_amount, weekly_offset_retirement_fee
 
     except Exception as e:
         return None, None, None
@@ -85,11 +85,11 @@ async def on_ready():
 #Loop time set to 2mins
 @tasks.loop(seconds=120)
 async def update_info():
-    weekly_total_amount, weekly_offset_amount, weekly_offset_fee, offset = get_info()
+    weekly_total_fees, weekly_offset_amount, weekly_offset_fee, offset = get_info()
 
-    if weekly_total_amount is not None and weekly_offset_amount is not None and weekly_offset_fee is not None and offset is not None:
+    if weekly_total_fees is not None and weekly_offset_amount is not None and weekly_offset_fee is not None and offset is not None:
 
-        dao_balance_text = f'Retired this week: {prettify_number(weekly_total_amount)}t'
+        dao_balance_text = f'Recent KI fees: {prettify_number(weekly_total_fees)}t'
         success = await update_nickname(client, dao_balance_text)
         if not success:
             return
