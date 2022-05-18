@@ -48,8 +48,8 @@ def get_weekly_retirement_fees(sg, seven_days_ago_timestamp, offset):
     try:
         kbm = sg.load_subgraph(KLIMA_CARBON_SUBGRAPH)
 
-        weekly_retirement_response = kbm.Query.dailyRetirements(
-            where=[kbm.DailyRetirement.timestamp > seven_days_ago_timestamp]
+        weekly_retirement_response = kbm.Query.dailyKlimaRetirements(
+            where=[kbm.DailyKlimaRetirement.timestamp > seven_days_ago_timestamp]
         )
         weekly_retirement_response = sg.query_json([weekly_retirement_response.token, weekly_retirement_response.amount, weekly_retirement_response.feeAmount, ])
         
