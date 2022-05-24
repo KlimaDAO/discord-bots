@@ -43,31 +43,38 @@ def get_current_date_timestamp():
 
     return current_date_timestamp
 
+def get_weekly_retirement_fees(sg, timestamp, offset):
+    ''' 
+    param `sg`: Initialized subgrounds object
+    param `timestamp`: Timestamp used for cutoff date (data created after the provided date will be fetched)
+    param `offset`: Specific Offset for which amount and fee will be retrieved
 
-def get_weekly_retirement_fees(sg, seven_days_ago_timestamp, offset):
+    returns:
+    `weekly_total_retirement_fee`: Total fee provided from retirements that were accumulated after the provided timestamp
+    `weekly_offset_retirement_amount`: Total amount provided from retirements for specific offset that were accumulated after the provided timestamp
+    `weekly_offset_retirement_fee`: Total fee provided from retirements for specific offset that were accumulated after the provided timestamp
+    '''
+
     try:
         kbm = sg.load_subgraph(KLIMA_CARBON_SUBGRAPH)
 
-        weekly_retirement_response = kbm.Query.dailyKlimaRetirements(
-            where=[kbm.DailyKlimaRetirement.timestamp > seven_days_ago_timestamp]
+        retirement_df = kbm.Query.dailyKlimaRetirements(
+            where=[kbm.DailyKlimaRetirement.timestamp > timestamp]
         )
-        weekly_retirement_response = sg.query_json([weekly_retirement_response.token, weekly_retirement_response.amount, weekly_retirement_response.feeAmount, ])
-        
-        #We know that there will be one item in dictionary which represents a response
-        #Therefore we get the first key in the dictionary and get response via that key
-        #Its easier to iterate through response this way compared to "query" method
-        key = list(weekly_retirement_response[0].keys())[0]
-        weekly_retirements = weekly_retirement_response[0][key]
 
-        weekly_total_retirement_fee = 0
+        retirement_df = sg.query_df(
+            [retirement_df.amount,
+            retirement_df.feeAmount,
+            retirement_df.token])
 
-        weekly_offset_retirement_amount = 0
-        weekly_offset_retirement_fee = 0
-        for retirement in weekly_retirements:
-            weekly_total_retirement_fee += retirement["feeAmount"]
-            if offset == retirement["token"]:
-                weekly_offset_retirement_amount += retirement["amount"]
-                weekly_offset_retirement_fee += retirement["feeAmount"]
+        if retirement_df.size == 0:
+            return 0, 0, 0
+
+        weekly_total_retirement_fee = retirement_df["dailyKlimaRetirements_feeAmount"].sum()
+        weekly_offset_retirement_amount = retirement_df.loc[retirement_df['dailyKlimaRetirements_token'] == offset,
+         'dailyKlimaRetirements_amount'].sum()
+        weekly_offset_retirement_fee = retirement_df.loc[retirement_df['dailyKlimaRetirements_token'] == offset,
+         'dailyKlimaRetirements_feeAmount'].sum()
 
         return weekly_total_retirement_fee, weekly_offset_retirement_amount, weekly_offset_retirement_fee
 
