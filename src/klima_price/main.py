@@ -5,7 +5,8 @@ from discord.ext import tasks
 from ..contract_info import klima_usdc_price, token_supply
 from ..constants import KLIMA_ADDRESS, KLIMA_DECIMALS
 from ..utils import get_discord_client, \
-                    get_polygon_web3, load_abi, update_nickname, update_presence
+    get_polygon_web3, load_abi, \
+    prettify_number, update_nickname, update_presence
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -37,10 +38,10 @@ async def update_info():
     price, supply = get_info()
 
     if price is not None and supply is not None:
-        mcap = f'${price*supply/1e6:,.1f}M'
-        print(f'{mcap} MCap')
+        mcap = price*supply
+        mcap_prettified = prettify_number(mcap)
 
-        success = await update_nickname(client, f'MCap: {mcap}')
+        success = await update_nickname(client, f'MCap: ${mcap_prettified}')
         if not success:
             return
 

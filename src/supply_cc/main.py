@@ -7,7 +7,7 @@ from subgrounds.subgrounds import Subgrounds
 from ..contract_info import token_supply
 from ..constants import KLIMA_ADDRESS, KLIMA_DECIMALS
 from ..utils import get_discord_client, \
-    get_polygon_web3, load_abi, \
+    get_polygon_web3, load_abi, prettify_number, \
     update_nickname, update_presence, \
     get_last_metric
 
@@ -50,7 +50,7 @@ async def update_info():
     cc, supply = get_info()
 
     if cc is not None and supply is not None:
-        supply_fmt = f'{supply/1e6:,.1f}M'
+        supply_fmt = f'{prettify_number(supply)}'
         print(f'{supply_fmt} KLIMA Supply')
 
         success = await update_nickname(client, f'Supply: {supply_fmt}')

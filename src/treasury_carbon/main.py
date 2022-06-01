@@ -4,7 +4,7 @@ from discord.ext import tasks
 
 from subgrounds.subgrounds import Subgrounds
 
-from ..utils import get_discord_client, \
+from ..utils import get_discord_client, prettify_number, \
     update_nickname, update_presence, \
     get_last_metric
 
@@ -35,7 +35,7 @@ async def update_info():
     cc, total_carbon = get_info()
 
     if cc is not None and total_carbon is not None:
-        total_fmt = f'{total_carbon/1e6:,.1f}Mt'
+        total_fmt = f'{prettify_number(total_carbon)}t'
         print(f'TTC: {total_fmt}')
 
         success = await update_nickname(client, f'TTC: {total_fmt}')

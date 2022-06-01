@@ -7,7 +7,8 @@ from ..constants import C3_ADDRESS, FRAX_DECIMALS, \
 from ..contract_info import token_supply, uni_v2_pool_price
 from ..utils import get_discord_client, get_eth_web3, \
                     get_polygon_web3, load_abi, \
-                    update_nickname, update_presence
+                    update_nickname, update_presence, \
+                    prettify_number
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -42,8 +43,8 @@ async def update_info():
         success = await update_nickname(client, price_text)
         if not success:
             return
-
-        success = await update_presence(client, f'Supply: {supply/1e9:,.2f}B')
+        supply_text = f'Supply: {prettify_number(supply)}'
+        success = await update_presence(client, supply_text)
         if not success:
             return
 

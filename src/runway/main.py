@@ -9,7 +9,7 @@ from ..constants import MCO2_ADDRESS, MCO2_DECIMALS,\
     NBO_DECIMALS, UBO_ADDRESS, UBO_DECIMALS
 from ..contract_info import token_supply
 from ..utils import get_discord_client, \
-    get_polygon_web3, get_eth_web3, load_abi, \
+    get_polygon_web3, get_eth_web3, load_abi, prettify_number, \
     update_nickname, update_presence, get_last_metric
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
@@ -68,14 +68,15 @@ async def update_info():
 
     if runway is not None and total_carbon_supply is not None:
 
-        runway_rounded = round(runway)
-        success = await update_nickname(client, f'Runway: {runway_rounded} days')
+        nickname_txt = f'Runway: {round(runway)} days'
+        success = await update_nickname(client, nickname_txt)
         if not success:
             return
 
+        presence_txt = f'On-Chain CO2: {prettify_number(total_carbon_supply)}t'
         success = await update_presence(
             client,
-            f'On-Chain CO2: {total_carbon_supply/1e6:,.1f}Mt',
+            presence_txt,
             type='playing'
         )
         if not success:
