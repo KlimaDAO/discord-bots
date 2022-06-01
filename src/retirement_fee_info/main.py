@@ -26,14 +26,16 @@ def get_info():
     global counter
     currentOffset = offsets[counter]
 
-    seven_days_ago_timestamp = get_current_date_timestamp() - SEVEN_DAYS_IN_SECONDS
-    weekly_total_fee, weekly_offset_amount, weekly_offset_fee = get_weekly_retirement_fees(sg, seven_days_ago_timestamp, currentOffset)
+    ts = get_current_date_timestamp() - SEVEN_DAYS_IN_SECONDS
+    w_total_amount, w_offset_amount = get_retirement_fees(sg,
+                                                          ts,
+                                                          currentOffset)
 
-    counter+=1
+    counter += 1
     if counter == len(offsets):
-        counter=0
+        counter = 0
 
-    return weekly_total_fee, weekly_offset_amount, weekly_offset_fee, currentOffset
+    return w_total_amount, w_offset_amount, currentOffset
 
 
 def get_current_date_timestamp():
@@ -43,16 +45,21 @@ def get_current_date_timestamp():
 
     return current_date_timestamp
 
-def get_weekly_retirement_fees(sg, timestamp, offset):
-    ''' 
+
+def get_retirement_fees(sg, timestamp, offset):
+    '''
     param `sg`: Initialized subgrounds object
-    param `timestamp`: Timestamp used for cutoff date (data created after the provided date will be fetched)
+    param `timestamp`: Timestamp used for cutoff date (data created after
+    the provided date will be fetched)
     param `offset`: Specific Offset for which amount and fee will be retrieved
 
     returns:
-    `weekly_total_retirement_fee`: Total fee provided from retirements that were accumulated after the provided timestamp
-    `weekly_offset_retirement_amount`: Total amount provided from retirements for specific offset that were accumulated after the provided timestamp
-    `weekly_offset_retirement_fee`: Total fee provided from retirements for specific offset that were accumulated after the provided timestamp
+    `weekly_total_retirement_fee`: Total fee provided from retirements that
+     were accumulated after the provided timestamp
+    `weekly_offset_retirement_amount`: Total amount provided from retirements
+    for specific offset that were accumulated after the provided timestamp
+    `weekly_offset_retirement_fee`: Total fee provided from retirements for
+    specific offset that were accumulated after the provided timestamp
     '''
 
     try:
@@ -64,21 +71,21 @@ def get_weekly_retirement_fees(sg, timestamp, offset):
 
         retirement_df = sg.query_df(
             [retirement_df.amount,
-            retirement_df.feeAmount,
-            retirement_df.token])
+             retirement_df.feeAmount,
+             retirement_df.token])
 
         if retirement_df.size == 0:
             return 0, 0, 0
 
-        weekly_total_retirement_fee = retirement_df["dailyKlimaRetirements_feeAmount"].sum()
-        weekly_offset_retirement_amount = retirement_df.loc[retirement_df['dailyKlimaRetirements_token'] == offset,
-         'dailyKlimaRetirements_amount'].sum()
-        weekly_offset_retirement_fee = retirement_df.loc[retirement_df['dailyKlimaRetirements_token'] == offset,
-         'dailyKlimaRetirements_feeAmount'].sum()
+        w_total_amount = retirement_df["dailyKlimaRetirements_amount"].sum()
 
-        return weekly_total_retirement_fee, weekly_offset_retirement_amount, weekly_offset_retirement_fee
+        w_offset_amount = retirement_df.loc[
+            retirement_df['dailyKlimaRetirements_token'] == offset,
+            'dailyKlimaRetirements_amount'].sum()
 
-    except Exception as e:
+        return w_total_amount, w_offset_amount
+
+    except Exception:
         return None, None, None
 
 
@@ -89,22 +96,22 @@ async def on_ready():
         update_info.start()
 
 
-#Loop time set to 2mins
-@tasks.loop(seconds=120)
+# Loop time set to 2mins
+@tasks.loop(seconds=10)
 async def update_info():
-    weekly_total_fees, weekly_offset_amount, weekly_offset_fee, offset = get_info()
+    total_amount, offset_amount, offset = get_info()
 
-    if weekly_total_fees is not None and weekly_offset_amount is not None and weekly_offset_fee is not None and offset is not None:
+    if total_amount is not None and offset_amount and offset is not None:
 
-        dao_balance_text = f'Recent KI fees: {prettify_number(weekly_total_fees)}t'
-        success = await update_nickname(client, dao_balance_text)
+        total_text = f'Retired last 7d: {prettify_number(total_amount)}t'
+        success = await update_nickname(client, total_text)
         if not success:
             return
 
-        latest_dao_income_text = f'{offset} retired/fee: {prettify_number(weekly_offset_amount)}t / {prettify_number(weekly_offset_fee)}t'
+        offset_text = f'{offset} retired: {prettify_number(offset_amount)}t'
         success = await update_presence(
             client,
-            latest_dao_income_text,
+            offset_text,
             type='playing'
         )
         if not success:
