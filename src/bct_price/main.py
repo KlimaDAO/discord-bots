@@ -5,8 +5,7 @@ from ..constants import BCT_ADDRESS, BCT_KLIMA_POOL, KLIMA_DECIMALS, BCT_DECIMAL
 from ..contract_info import uni_v2_pool_price, token_supply, klima_usdc_price
 from ..utils import get_polygon_web3, \
                     get_discord_client, load_abi, prettify_number, \
-                    update_nickname, update_presence, \
-                    prettify_number
+                    update_nickname, update_presence
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
