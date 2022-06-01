@@ -27,15 +27,15 @@ def get_info():
     currentOffset = offsets[counter]
 
     ts = get_current_date_timestamp() - SEVEN_DAYS_IN_SECONDS
-    w_total_amount, w_offset_amount = get_retirement_fees(sg,
-                                                          ts,
-                                                          currentOffset)
+    w_offset_amount = get_retirement_fees(sg,
+                                          ts,
+                                          currentOffset)
 
     counter += 1
     if counter == len(offsets):
         counter = 0
 
-    return w_total_amount, w_offset_amount, currentOffset
+    return w_offset_amount, currentOffset
 
 
 def get_current_date_timestamp():
@@ -54,12 +54,7 @@ def get_retirement_fees(sg, timestamp, offset):
     param `offset`: Specific Offset for which amount and fee will be retrieved
 
     returns:
-    `weekly_total_retirement_fee`: Total fee provided from retirements that
-     were accumulated after the provided timestamp
-    `weekly_offset_retirement_amount`: Total amount provided from retirements
-    for specific offset that were accumulated after the provided timestamp
-    `weekly_offset_retirement_fee`: Total fee provided from retirements for
-    specific offset that were accumulated after the provided timestamp
+    `w_offset_amount`: Total amount provided from retirements
     '''
 
     try:
@@ -77,16 +72,14 @@ def get_retirement_fees(sg, timestamp, offset):
         if retirement_df.size == 0:
             return 0, 0, 0
 
-        w_total_amount = retirement_df["dailyKlimaRetirements_amount"].sum()
-
         w_offset_amount = retirement_df.loc[
             retirement_df['dailyKlimaRetirements_token'] == offset,
             'dailyKlimaRetirements_amount'].sum()
 
-        return w_total_amount, w_offset_amount
+        return w_offset_amount
 
     except Exception:
-        return None, None, None
+        return None
 
 
 @client.event
@@ -97,21 +90,21 @@ async def on_ready():
 
 
 # Loop time set to 2mins
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=120)
 async def update_info():
-    total_amount, offset_amount, offset = get_info()
+    offset_amount, offset = get_info()
 
-    if total_amount is not None and offset_amount and offset is not None:
+    if offset_amount and offset is not None:
 
-        total_text = f'Retired last 7d: {prettify_number(total_amount)}t'
-        success = await update_nickname(client, total_text)
+        offset_text = f'{offset} Retired: {prettify_number(offset_amount)}t'
+        success = await update_nickname(client, offset_text)
         if not success:
             return
 
-        offset_text = f'{offset} retired: {prettify_number(offset_amount)}t'
+        total_text = 'in the last 7d'
         success = await update_presence(
             client,
-            offset_text,
+            total_text,
             type='playing'
         )
         if not success:
