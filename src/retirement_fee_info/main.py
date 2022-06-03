@@ -96,7 +96,7 @@ async def update_info():
 
     if offset_amount and offset is not None:
 
-        offset_text = f'{offset} Retired: {prettify_number(offset_amount)}t'
+        offset_text = f'Retired {offset}: {prettify_number(offset_amount)}t'
         success = await update_nickname(client, offset_text)
         if not success:
             return
