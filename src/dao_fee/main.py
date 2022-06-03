@@ -63,14 +63,10 @@ def get_todays_dao_fee(sg, todayts):
         todays_bonds = kbm.Query.dailyBonds(
             where=[kbm.DailyBond.timestamp == todayts]
         )
-        todays_fee = sg.query([todays_bonds.daoIncome])
-        # todays_fees = sg.query_df([todays_bonds.daoIncome]).sum()
+        fee_df = sg.query_df([todays_bonds.daoFee])
+        todays_fees = fee_df["dailyBonds_daoFee"].sum()
 
-        fee_sum = 0
-        for fee in todays_fee:
-            fee_sum += fee
-
-        return fee_sum
+        return todays_fees
 
     except Exception:
         return None
