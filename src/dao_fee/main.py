@@ -9,7 +9,7 @@ from ..constants import KLIMA_ADDRESS, DAO_WALLET_ADDRESS, \
     KLIMA_DECIMALS, KLIMA_BONDS_SUBGRAPH
 from ..contract_info import balance_of
 from ..utils import get_discord_client, \
-    get_polygon_web3, load_abi, \
+    get_polygon_web3, load_abi, prettify_number, \
     update_nickname, update_presence
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
@@ -85,15 +85,15 @@ async def update_info():
 
     if dao_balance is not None and latest_dao_fee is not None:
 
-        dao_balance_text = f'DAO Wallet: {dao_balance:,.2f} KLIMA'
+        dao_balance_text = f'DAO Wallet: {prettify_number(dao_balance)} KLIMA'
         success = await update_nickname(client, dao_balance_text)
         if not success:
             return
 
-        latest_dao_fee_text = f'Today\'s fee: {latest_dao_fee:,.2f} KLIMA'
+        fee_text = f'Today\'s fee: {prettify_number(latest_dao_fee)} KLIMA'
         success = await update_presence(
             client,
-            latest_dao_fee_text,
+            fee_text,
             type='playing'
         )
         if not success:
