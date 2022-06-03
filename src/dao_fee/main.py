@@ -28,8 +28,8 @@ sg = Subgrounds()
 
 def get_info():
     dao_balance = get_dao_balance()
-    latest_dao_income = get_latest_income()
-    return dao_balance, latest_dao_income
+    latest_dao_fee = get_latest_fee()
+    return dao_balance, latest_dao_fee
 
 
 def get_dao_balance():
@@ -38,14 +38,14 @@ def get_dao_balance():
     return dao_balance
 
 
-def get_latest_income():
+def get_latest_fee():
     '''
-    Retrieve latest DAO Wallet income by checking the Daily Bonds Subgraph Query
+    Retrieve latest DAO Wallet fee by checking the Daily Bonds Subgraph Query
     '''
     current_date_timestamp = get_current_date_timestamp()
-    todays_income = get_todays_dao_income(sg, current_date_timestamp)
+    todays_fee = get_todays_dao_fee(sg, current_date_timestamp)
 
-    return todays_income
+    return todays_fee
 
 
 def get_current_date_timestamp():
@@ -56,20 +56,21 @@ def get_current_date_timestamp():
     return current_date_timestamp
 
 
-def get_todays_dao_income(sg, todayts):
+def get_todays_dao_fee(sg, todayts):
     try:
         kbm = sg.load_subgraph(KLIMA_BONDS_SUBGRAPH)
 
         todays_bonds = kbm.Query.dailyBonds(
             where=[kbm.DailyBond.timestamp == todayts]
         )
-        todays_income = sg.query([todays_bonds.daoIncome])
+        todays_fee = sg.query([todays_bonds.daoIncome])
+        # todays_fees = sg.query_df([todays_bonds.daoIncome]).sum()
 
-        income_sum = 0
-        for income in todays_income:
-            income_sum += income
+        fee_sum = 0
+        for fee in todays_fee:
+            fee_sum += fee
 
-        return income_sum
+        return fee_sum
 
     except Exception:
         return None
@@ -84,19 +85,19 @@ async def on_ready():
 
 @tasks.loop(seconds=300)
 async def update_info():
-    dao_balance, latest_dao_income = get_info()
+    dao_balance, latest_dao_fee = get_info()
 
-    if dao_balance is not None and latest_dao_income is not None:
+    if dao_balance is not None and latest_dao_fee is not None:
 
         dao_balance_text = f'DAO Wallet: {dao_balance:,.2f} KLIMA'
         success = await update_nickname(client, dao_balance_text)
         if not success:
             return
 
-        latest_dao_income_text = f'Today\'s income: {latest_dao_income:,.2f} KLIMA'
+        latest_dao_fee_text = f'Today\'s fee: {latest_dao_fee:,.2f} KLIMA'
         success = await update_presence(
             client,
-            latest_dao_income_text,
+            latest_dao_fee_text,
             type='playing'
         )
         if not success:

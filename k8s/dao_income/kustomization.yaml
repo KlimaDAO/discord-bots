@@ -4,10 +4,10 @@ kind: Kustomization
 resources:
   - ../base
 
-namePrefix: dao-income-
+namePrefix: dao-fee-
 
 commonLabels:
-  bot: dao-income
+  bot: dao-fee
 
 patchesStrategicMerge:
   - deployment_set_bot.yaml

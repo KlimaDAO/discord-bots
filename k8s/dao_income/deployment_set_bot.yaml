@@ -7,10 +7,10 @@ spec:
     spec:
       containers:
       - name: bot
-        args: ["src.dao_income.main"]
+        args: ["src.dao_fee.main"]
         env:
         - name: DISCORD_BOT_TOKEN
           valueFrom:
             secretKeyRef:
               name: discord-bots-secret
-              key: DISCORD_BOT_TOKEN_DAO_INCOME
+              key: DISCORD_BOT_TOKEN_DAO_FEE
