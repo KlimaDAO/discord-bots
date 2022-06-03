@@ -20,6 +20,7 @@ resources:
   - ./treasury_market
   - ./ubo_price
   - ./runway
+  - ./retirement_fee_info
 
 namespace: discord-bots
 

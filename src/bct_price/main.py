@@ -4,7 +4,8 @@ from discord.ext import tasks
 from ..constants import BCT_ADDRESS, BCT_KLIMA_POOL, KLIMA_DECIMALS, BCT_DECIMALS
 from ..contract_info import uni_v2_pool_price, token_supply, klima_usdc_price
 from ..utils import get_polygon_web3, \
-                    get_discord_client, load_abi, update_nickname, update_presence
+                    get_discord_client, load_abi, prettify_number, \
+                    update_nickname, update_presence
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
@@ -47,7 +48,7 @@ async def update_info():
 
         success = await update_presence(
             client,
-            f'Supply: {supply/1e6:,.1f}M'
+            f'Supply: {prettify_number(supply)}'
         )
         if not success:
             return
