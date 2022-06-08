@@ -1,24 +1,15 @@
-import calendar
 import os
-from datetime import datetime
 from discord.ext import tasks
 
 from subgrounds.subgrounds import Subgrounds
 
-from ..constants import KLIMA_ADDRESS, DAO_WALLET_ADDRESS, \
-    KLIMA_DECIMALS, KLIMA_BONDS_SUBGRAPH
-from ..contract_info import balance_of
+from ..constants import KLIMA_BONDS_SUBGRAPH
 from ..utils import get_discord_client, \
-    get_polygon_web3, load_abi, prettify_number, \
+    prettify_number, \
     update_nickname, update_presence
+from ..time_utils import get_days_ago_timestamp
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
-
-# Initialize web3
-web3 = get_polygon_web3()
-
-# Load ABI
-erc_20_abi = load_abi('erc20_token.json')
 
 # Initialized Discord client
 client = get_discord_client()
@@ -27,43 +18,29 @@ sg = Subgrounds()
 
 
 def get_info():
-    dao_balance = get_dao_balance()
     latest_dao_fee = get_latest_fee()
-    return dao_balance, latest_dao_fee
-
-
-def get_dao_balance():
-    dao_balance = balance_of(
-        web3, KLIMA_ADDRESS, erc_20_abi, KLIMA_DECIMALS, DAO_WALLET_ADDRESS)
-    return dao_balance
+    return latest_dao_fee
 
 
 def get_latest_fee():
     '''
-    Retrieve latest DAO Wallet fee by checking the Daily Bonds Subgraph Query
+    Retrieve recent DAO Wallet fee by checking the Daily Bonds Subgraph Query
     '''
-    current_date_timestamp = get_current_date_timestamp()
-    todays_fee = get_todays_dao_fee(sg, current_date_timestamp)
+    ts = get_days_ago_timestamp(7)
+    todays_fee = get_recent_dao_fee(sg, ts)
 
     return todays_fee
 
 
-def get_current_date_timestamp():
-    date_string = datetime.utcnow().strftime("%d/%m/%Y")
-    date = datetime.strptime(date_string, "%d/%m/%Y")
-    current_date_timestamp = round(calendar.timegm(date.timetuple()))
-
-    return current_date_timestamp
-
-
-def get_todays_dao_fee(sg, todayts):
+def get_recent_dao_fee(sg, ts):
     try:
         kbm = sg.load_subgraph(KLIMA_BONDS_SUBGRAPH)
 
-        todays_bonds = kbm.Query.dailyBonds(
-            where=[kbm.DailyBond.timestamp == todayts]
+        weekly_bonds = kbm.Query.dailyBonds(
+            where=[kbm.DailyBond.timestamp > ts]
         )
-        fee_df = sg.query_df([todays_bonds.daoFee])
+
+        fee_df = sg.query_df([weekly_bonds.daoFee])
         todays_fees = fee_df["dailyBonds_daoFee"].sum()
 
         return todays_fees
@@ -81,19 +58,19 @@ async def on_ready():
 
 @tasks.loop(seconds=300)
 async def update_info():
-    dao_balance, latest_dao_fee = get_info()
+    latest_dao_fee = get_info()
 
-    if dao_balance is not None and latest_dao_fee is not None:
+    if latest_dao_fee is not None:
+        fee_text = f'Fees: {prettify_number(latest_dao_fee)} KLIMA'
 
-        dao_balance_text = f'DAO Wallet: {prettify_number(dao_balance)} KLIMA'
-        success = await update_nickname(client, dao_balance_text)
+        presence_text = "from the last 7d bonds"
+        success = await update_nickname(client, fee_text)
         if not success:
             return
 
-        fee_text = f'Today\'s fee: {prettify_number(latest_dao_fee)} KLIMA'
         success = await update_presence(
             client,
-            fee_text,
+            presence_text,
             type='playing'
         )
         if not success:
