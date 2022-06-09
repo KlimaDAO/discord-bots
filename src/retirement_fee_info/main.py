@@ -3,7 +3,7 @@ from discord.ext import tasks
 
 from subgrounds.subgrounds import Subgrounds
 
-from time_utils import get_days_ago_timestamp
+from ..time_utils import get_days_ago_timestamp
 
 from ..constants import KLIMA_CARBON_SUBGRAPH
 from ..utils import get_discord_client, \
