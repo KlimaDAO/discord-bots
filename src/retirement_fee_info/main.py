@@ -1,9 +1,9 @@
-import calendar
 import os
-from datetime import datetime
 from discord.ext import tasks
 
 from subgrounds.subgrounds import Subgrounds
+
+from ..time_utils import get_days_ago_timestamp
 
 from ..constants import KLIMA_CARBON_SUBGRAPH
 from ..utils import get_discord_client, \
@@ -11,7 +11,6 @@ from ..utils import get_discord_client, \
     prettify_number
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
-SEVEN_DAYS_IN_SECONDS = 604800
 
 # Initialized Discord client
 client = get_discord_client()
@@ -26,7 +25,7 @@ def get_info():
     global counter
     currentOffset = offsets[counter]
 
-    ts = get_current_date_timestamp() - SEVEN_DAYS_IN_SECONDS
+    ts = get_days_ago_timestamp(7)
     w_offset_amount = get_retirement_fees(sg,
                                           ts,
                                           currentOffset)
@@ -36,14 +35,6 @@ def get_info():
         counter = 0
 
     return w_offset_amount, currentOffset
-
-
-def get_current_date_timestamp():
-    date_string = datetime.utcnow().strftime("%d/%m/%Y")
-    date = datetime.strptime(date_string, "%d/%m/%Y")
-    current_date_timestamp = round(calendar.timegm(date.timetuple()))
-
-    return current_date_timestamp
 
 
 def get_retirement_fees(sg, timestamp, offset):

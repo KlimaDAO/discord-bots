@@ -45,3 +45,22 @@ def token_supply(web3, token_address, abi, decimals):
         return total_supply
     except Exception:
         return None
+
+
+def balance_of(web3, token_address, abi, decimals, address_to_check):
+    '''
+    Compute the balance for specific `address_to_check`
+    of the specified ERC-20 token at `token_address`
+    with `abi` and the correct `decimals`
+    '''
+    contract = web3.eth.contract(
+        address=token_address,
+        abi=abi
+    )
+
+    try:
+        balance = contract.functions.balanceOf(
+            address_to_check).call() / 10**decimals
+        return balance
+    except Exception:
+        return None
