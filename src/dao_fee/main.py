@@ -41,6 +41,10 @@ def get_recent_dao_fee(sg, ts):
         )
 
         fee_df = sg.query_df([weekly_bonds.daoFee])
+
+        if fee_df.size == 0:
+            return 0
+
         todays_fees = fee_df["dailyBonds_daoFee"].sum()
 
         return todays_fees
