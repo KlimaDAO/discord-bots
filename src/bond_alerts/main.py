@@ -58,7 +58,7 @@ def base_token_price(lp_address, known_address, known_price):
             tokenPrice = known_price * \
                 reserves[1] * 10**decimals0 / (reserves[0] * 10**decimals1)
 
-        return(tokenPrice)
+        return tokenPrice
 
     except Exception as e:
         print('base_token_price error')
@@ -80,7 +80,7 @@ def lp_price(lp_address):
         get_reserves = LP_contract.functions.getReserves().call()
         amount0 = get_reserves[0] / 10**token0.functions.decimals().call()
         amount1 = get_reserves[1] / 10**token1.functions.decimals().call()
-        return(decimal.Decimal(amount0 / amount1))
+        return decimal.Decimal(amount0 / amount1)
 
     except Exception as e:
         print('lp_price error')
@@ -99,7 +99,7 @@ def fetch_staking_rewards():
 
         rebase = rewards / circ_supply
         staking_rewards = (1 + rewards / circ_supply)**float(15) - 1
-        return(rebase, 100 * staking_rewards)
+        return rebase, 100 * staking_rewards
 
     except Exception as e:
         print('fetch_staking_rewards error')
@@ -109,7 +109,7 @@ def fetch_staking_rewards():
 
 def contract_info(bond_address, payoutTokenPrice, maxReached=False):
     if maxReached is True:
-        return(-999, -999, -999)
+        return -999, -999, -999
     else:
         try:
             # Retrieve bond price + current discount
@@ -122,7 +122,7 @@ def contract_info(bond_address, payoutTokenPrice, maxReached=False):
                 BondPriceUSD = bond.functions.bondPriceInUSD().call() / 1e18
             MaxCap = bond.functions.maxPayout().call() / 1e9
             Disc = (decimal.Decimal(payoutTokenPrice) - decimal.Decimal(BondPriceUSD)) / decimal.Decimal(BondPriceUSD)  # noqa: E501
-            return(payoutTokenPrice, 100 * Disc, MaxCap)
+            return payoutTokenPrice, 100 * Disc, MaxCap
 
         except Exception as e:
             print('contract_info error')
@@ -135,9 +135,9 @@ def max_debt_reached(bond_address):
         currentDebt = bond.functions.currentDebt().call()
         maxDebt = bond.functions.terms().call()
         if currentDebt >= maxDebt[-1]:
-            return(True)
+            return True
         else:
-            return(False)
+            return False
 
     except Exception as e:
         print(e)
@@ -147,9 +147,9 @@ def check_is_worth(staking_rewards, rebase, bondDiscount):
     cutoff_discount = bondDiscount + \
         ((1 + rebase)) * (1 - (1 + rebase)**15) / (1 - (1 + rebase)) / 15 - 1
     if staking_rewards >= cutoff_discount:
-        return(':no_entry:', cutoff_discount)
+        return ':no_entry:', cutoff_discount
     else:
-        return(':white_check_mark:', cutoff_discount)
+        return ':white_check_mark:', cutoff_discount
 
 
 def get_prices():
@@ -202,7 +202,7 @@ def get_prices():
         last_info = fetch_bond_info(bond_db, b)
         bond_info[b] = last_info
 
-    return(klima_price_usd, rebase, staking_rewards, bond_info)
+    return klima_price_usd, rebase, staking_rewards, bond_info
 
 
 # Create a class for the embed

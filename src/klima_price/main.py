@@ -23,7 +23,7 @@ def get_info():
     klima_price = klima_usdc_price(web3)
     supply = token_supply(web3, KLIMA_ADDRESS, klima_abi, KLIMA_DECIMALS)
 
-    return(klima_price, supply)
+    return klima_price, supply
 
 
 @client.event

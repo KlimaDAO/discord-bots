@@ -20,7 +20,7 @@ def get_info():
     last_metric = get_last_metric(sg)
     total_cc, total_carbon = sg.query([last_metric.treasuryCarbonCustodied, last_metric.treasuryCarbon])
 
-    return(total_cc, total_carbon)
+    return total_cc, total_carbon
 
 
 @client.event

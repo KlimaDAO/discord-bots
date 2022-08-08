@@ -35,7 +35,7 @@ def get_info():
     supply = token_supply(web3, KLIMA_ADDRESS, klima_abi, KLIMA_DECIMALS)
     cc = get_cc()
 
-    return(cc, supply)
+    return cc, supply
 
 
 @client.event
