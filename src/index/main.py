@@ -34,7 +34,7 @@ def get_info():
     price = klima_usdc_price(web3)
     index = get_index()
 
-    return(index, price)
+    return index, price
 
 
 @client.event

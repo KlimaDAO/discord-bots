@@ -20,7 +20,7 @@ def get_info():
     last_metric = get_last_metric(sg)
     tmv, mc = sg.query([last_metric.treasuryMarketValue, last_metric.marketCap])
 
-    return(tmv, mc)
+    return tmv, mc
 
 
 @client.event

@@ -48,7 +48,7 @@ def search_alert(table: Table, search_bond: str = None, search_user: str = None,
         for a in r:
             rr.append(Alert(a['fields']['bond'], a['fields']['discount'], a['fields']['user']))
 
-        return(rr)
+        return rr
 
 
 def activate_alert(table: Table, search_bond: str, search_user: str, search_discount: float):
@@ -67,14 +67,14 @@ def fetch_bond_md(table: Table, search_bond: str):
     formula = match({'bond': search_bond, 'active': True})
     r = table.first(formula=formula)
     if r is not None:
-        return(r['fields']['address'], r['fields']['quote_token'])
+        return r['fields']['address'], r['fields']['quote_token']
 
 
 def fetch_token_md(table: Table, search_token: str):
     formula = match({'token': search_token})
     r = table.first(formula=formula)
     if r is not None:
-        return(r['fields']['pool_address'], r['fields']['pool_base_token'])
+        return r['fields']['pool_address'], r['fields']['pool_base_token']
 
 
 def fetch_bond_info(table: Table, search_bond: str):
@@ -82,16 +82,16 @@ def fetch_bond_info(table: Table, search_bond: str):
     r = table.first(formula=formula)
     if r is not None:
         if 'debt_reached' in r['fields']:
-            return(Bond(r['fields']['bond'], r['fields']['price_usd'], r['fields']['discount'], r['fields']['max_purchase'], r['fields']['debt_reached']))   # noqa: E501
+            return Bond(r['fields']['bond'], r['fields']['price_usd'], r['fields']['discount'], r['fields']['max_purchase'], r['fields']['debt_reached'])   # noqa: E501
         else:
-            return(Bond(r['fields']['bond'], r['fields']['price_usd'], r['fields']['discount'], r['fields']['max_purchase'], False))   # noqa: E501
+            return Bond(r['fields']['bond'], r['fields']['price_usd'], r['fields']['discount'], r['fields']['max_purchase'], False)   # noqa: E501
 
 
 def fetch_token_info(table: Table, search_token: str):
     formula = match({'token': search_token})
     r = table.first(formula=formula)
     if r is not None:
-        return(r['fields']['price_klima'], r['fields']['price_usd'])
+        return r['fields']['price_klima'], r['fields']['price_usd']
 
 
 def active_bonds(table: Table):
@@ -101,7 +101,7 @@ def active_bonds(table: Table):
         rr = []
         for b in r:
             rr.append(b['fields']['bond'])
-        return(rr)
+        return rr
 
 
 def active_tokens(table: Table):
@@ -111,7 +111,7 @@ def active_tokens(table: Table):
         rr = []
         for b in r:
             rr.append(b['fields']['token'])
-        return(rr)
+        return rr
 
 
 def update_bond_info(table: Table, update_bond: str, update_price: float, update_disc: float, update_capacity: float, update_debt: bool):   # noqa: E501
@@ -134,22 +134,22 @@ def add_alert(table: Table, add_bond: str, add_discount: float, add_user: str):
             for a in alert_check:
                 if a == (add_bond, float(add_discount), add_user):
                     # Alert already configured
-                    return(0)
+                    return 0
 
             # All checks passed, create alert
             try:
                 table.create({'bond': add_bond, 'user': add_user, 'discount': add_discount})
-                return(1)
+                return 1
             except Exception as e:
                 print(e)
-                return(-999)
+                return -999
 
         else:
             # User already has 5 alerts configured
-            return(-1)
+            return -1
     else:
         # Bond does not exist or not active anymore
-        return(-2)
+        return -2
 
 
 def remove_alert(table: Table, delete_bond: str, delete_discount: float, delete_user: str):
@@ -158,10 +158,10 @@ def remove_alert(table: Table, delete_bond: str, delete_discount: float, delete_
     if r is not None:
         try:
             table.delete(r['id'])
-            return(1)
+            return 1
         except Exception as e:
             print(e)
-            return(-999)
+            return -999
     else:
         # Alert does not exist
-        return(0)
+        return 0

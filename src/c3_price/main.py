@@ -36,7 +36,7 @@ async def update_info():
     supply = token_supply(web3, C3_ADDRESS, c3_abi, C3_DECIMALS)
 
     if price is not None and supply is not None:
-        price_text = f'${price:,.3f} C3'
+        price_text = f'${price:,.6f} C3'
 
         print(price_text)
 
