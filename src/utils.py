@@ -27,10 +27,11 @@ def get_eth_web3():
     return web3_eth
 
 
-def get_discord_client(members_intent=False, presences_intent=False):
+def get_discord_client(members_intent=False, presences_intent=False, message_content_intent=False):
     intents = discord.Intents.default()
     intents.members = members_intent
     intents.presences = presences_intent
+    intents.message_content = message_content_intent
 
     client = commands.Bot(intents=intents, help_command=None, command_prefix='&?')
 
