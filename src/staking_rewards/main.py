@@ -94,7 +94,7 @@ async def update_info():
         # ie, reward % in the next 5 days
         five_day_rewards = math.pow(1 + staking_rebase, 5 * rebases_per_day) - 1
         # ie, annualized reward %
-        staking_akr = math.pow(1 + staking_rebase, 365 * rebases_per_day)
+        staking_akr = math.pow(1 + staking_rebase, 365 * rebases_per_day) - 1
     else:
         return
 
