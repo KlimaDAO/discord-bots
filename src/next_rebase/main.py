@@ -102,17 +102,23 @@ async def update_info():
     if next_rebase_secs <= warning_secs and time() - last_rebase_warning > warning_secs + 30:
         last_rebase_warning = time()
         webhook = get_webhook()
-        webhook.send(
-            f"Rebase imminent in approximately {warning_mins} minutes <@&{REBASER_ROLE_ID}>"
-        )
+        try:
+            webhook.send(
+                f"Rebase imminent in approximately {warning_mins} minutes <@&{REBASER_ROLE_ID}>"
+            )
+        except discord.errors.NotFound:
+            print("Webhook not found")
 
     # More than 120s since the last rebase alert
     if next_rebase_secs <= 90 and time() - last_rebase_alert > 120:
         last_rebase_alert = time()
         webhook = get_webhook()
-        webhook.send(
-            f"Rebasing momentarily! <@&{REBASER_ROLE_ID}> (:deciduous_tree:, :deciduous_tree:)"
-        )
+        try:
+            webhook.send(
+                f"Rebasing momentarily! <@&{REBASER_ROLE_ID}> (:deciduous_tree:, :deciduous_tree:)"
+            )
+        except discord.errors.NotFound:
+            print("Webhook not found")
 
     countdown_text = f'Rebase In: {int(hours)}h {int(minutes)}m'
 
