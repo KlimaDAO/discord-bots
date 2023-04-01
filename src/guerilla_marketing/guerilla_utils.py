@@ -96,7 +96,7 @@ def validate_address(address):
     if not w3.isAddress(address):
         return False
 
-    aklima_contract = w3.eth.contract(w3.toChecksumAddress(AKLIMA_CONTRACT_ADDR), abi=ERC20_ABI)
+    aklima_contract = w3.eth.contract(w3.to_checksum_address(AKLIMA_CONTRACT_ADDR), abi=ERC20_ABI)
     akl_balance = aklima_contract.functions.balanceOf(address).call()
 
     if akl_balance > 0:
