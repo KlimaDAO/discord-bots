@@ -96,7 +96,7 @@ async def update_info():
     else:
         return
 
-    yield_text = f'{five_day_rewards*100:,.2f}% 5 Day Rewards'
+    yield_text = f'{five_day_rewards*100:,.3f}% 5 Day Rewards'
     print(yield_text)
 
     success = await update_nickname(client, yield_text)
