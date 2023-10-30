@@ -3,7 +3,7 @@ from discord.ext import tasks
 
 from subgrounds.subgrounds import Subgrounds
 
-from ..constants import MCO2_ADDRESS, MCO2_DECIMALS,\
+from ..constants import MCO2_ADDRESS, MCO2_DECIMALS, \
     BCT_ADDRESS, BCT_DECIMALS, \
     NCT_ADDRESS, NCT_DECIMALS, NBO_ADDRESS, \
     NBO_DECIMALS, UBO_ADDRESS, UBO_DECIMALS
