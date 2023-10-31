@@ -1,5 +1,8 @@
 from web3 import Web3
 
+# Polygon
+AVG_BLOCK_RATE_SECONDS = 2.21
+
 # Token Decimals
 BCT_DECIMALS = 18
 C3_DECIMALS = 18
