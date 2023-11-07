@@ -28,4 +28,5 @@ namespace: discord-bots
 
 secretGenerator:
   - name: discord-bots-secret
-    env: secret.properties
+    envs: 
+      - secret.properties

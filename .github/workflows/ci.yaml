@@ -27,12 +27,14 @@ jobs:
       - name: Check out source repository
         uses: actions/checkout@v2
       - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v1
+        uses: imranismail/setup-kustomize@v2.1.0-rc
         with:
           kustomize-version: "4.5.4"
+      - name: Update secret properties with injected secrets
+        run: touch $GITHUB_WORKSPACE/k8s/secret.properties
       - name: Kustomize
         run: kustomize build k8s > /tmp/kustomized.yaml
-      - uses: azure/k8s-lint@v1
+      - uses: azure/k8s-lint@v2.0
         with:
           manifests: |
             /tmp/kustomized.yaml
