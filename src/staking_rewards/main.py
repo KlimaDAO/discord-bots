@@ -1,14 +1,15 @@
 import os
-import json
 import math
 import traceback
 
-import requests
 from web3.middleware import geth_poa_middleware
 from discord.ext import tasks
 
 from ..constants import DISTRIBUTOR_ADDRESS, SKLIMA_ADDRESS
 from ..utils import get_discord_client, get_polygon_web3, load_abi, update_nickname, update_presence
+
+# Hard-coded since Polygon block times have stabilized
+AVG_BLOCK_SECS = 2.21
 
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 SCAN_API_KEY = os.environ['POLYGONSCAN_API_KEY']
@@ -62,11 +63,8 @@ def get_rebases_per_day(blocks_per_rebase):
     Calculates the average number of rebases per day based on the average
     block production time for the previous 1 million blocks
     '''
-    avg_block_secs = float(json.loads(
-        requests.get('https://klimadao.finance/api/block-rate').content)['blockRate30Day']
-    )
 
-    secs_per_rebase = blocks_per_rebase * avg_block_secs
+    secs_per_rebase = blocks_per_rebase * AVG_BLOCK_SECS
 
     return 24 / (secs_per_rebase / 60 / 60)
 
@@ -98,7 +96,7 @@ async def update_info():
     else:
         return
 
-    yield_text = f'{five_day_rewards*100:,.2f}% 5 Day Rewards'
+    yield_text = f'{five_day_rewards*100:,.3f}% 5 Day Rewards'
     print(yield_text)
 
     success = await update_nickname(client, yield_text)

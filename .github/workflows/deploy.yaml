@@ -75,11 +75,13 @@ jobs:
 
       # k8s Deployment
       - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v1
+        uses: imranismail/setup-kustomize@v2.1.0-rc
         with:
           kustomize-version: "4.5.4"
       - name: Update deployment file with image
         run: sed -i 's|<IMAGE>|'${DOCKER_IMAGE}'|' $GITHUB_WORKSPACE/k8s/base/deployment.yaml
+      - name: Update secret properties with injected secrets
+        run: envsubst < $GITHUB_WORKSPACE/k8s/secret.properties.template > $GITHUB_WORKSPACE/k8s/secret.properties
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
       - name: Deploy to DigitalOcean Kubernetes
