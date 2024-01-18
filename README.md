@@ -75,6 +75,7 @@ These variables must also be defined, and will be used to replace variables in t
 - `DISCORD_BOT_TOKEN_BCT_PRICE`
 - `DISCORD_BOT_TOKEN_MCO2_PRICE`
 - `DISCORD_BOT_TOKEN_STAKING_REWARDS`
+- `DISCORD_BOT_TOKEN_CCO2_PRICE`
 
 #### Digital Ocean App Platform
 
