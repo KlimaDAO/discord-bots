@@ -31,7 +31,7 @@ def klima_usdc_price(web3):
     )
 
 
-def token_supply(web3, token_address, abi, decimals):
+def token_supply(web3, token_address, abi, decimals=None):
     '''
     Compute the total supply of the specified ERC-20 token at `token_address` with `abi` and the correct `decimals`
     '''
@@ -41,6 +41,8 @@ def token_supply(web3, token_address, abi, decimals):
     )
 
     try:
+        if decimals is None:
+            decimals = contract.functions.decimals().call()
         total_supply = contract.functions.totalSupply().call() / 10**decimals
         return total_supply
     except Exception:

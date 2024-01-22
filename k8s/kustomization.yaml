@@ -23,10 +23,11 @@ resources:
   - ./retirement_fee_info
   - ./dao_fee
   - ./dao_balance
+  - ./cco2_price
 
 namespace: discord-bots
 
 secretGenerator:
   - name: discord-bots-secret
-    envs: 
+    envs:
       - secret.properties
