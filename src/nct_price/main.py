@@ -35,7 +35,7 @@ async def update_info():
     supply = token_supply(web3, NCT_ADDRESS, nct_abi, NCT_DECIMALS)
 
     if price is not None and supply is not None:
-        price_text = f'${price:,.2f} NCT'
+        price_text = f'${price:,.2f}/t NCT'
 
         print(price_text)
 
