@@ -38,7 +38,7 @@ async def update_info():
 
     if klima_price is not None and token_price is not None and supply is not None:
         price = klima_price / token_price
-        price_text = f'${price:,.2f} BCT'
+        price_text = f'${price:,.2f}/t BCT'
 
         print(price_text)
 
