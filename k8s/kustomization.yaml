@@ -13,7 +13,7 @@ resources:
   - ./moss_price
   - ./nbo_price
   - ./nct_price
-  - ./next_rebase
+  - ./next_rewards
   - ./staking_rewards
   - ./supply_cc
   - ./treasury_carbon

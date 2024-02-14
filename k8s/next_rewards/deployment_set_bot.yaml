@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: bot
-        args: ["src.next_rebase.main"]
+        args: ["src.next_rewards.main"]
         env:
         - name: DISCORD_BOT_TOKEN
           valueFrom:

@@ -4,10 +4,10 @@ kind: Kustomization
 resources:
   - ../base
 
-namePrefix: next-rebase-
+namePrefix: next-rewards-
 
 commonLabels:
-  bot: next-rebase
+  bot: next-rewards
 
 patchesStrategicMerge:
   - deployment_set_bot.yaml
