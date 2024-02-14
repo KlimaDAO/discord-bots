@@ -4,10 +4,10 @@ kind: Kustomization
 resources:
   - ../base
 
-namePrefix: next-rebase-
+namePrefix: dcm-supply-
 
 commonLabels:
-  bot: next-rebase
+  bot: dcm-supply
 
 patchesStrategicMerge:
   - deployment_set_bot.yaml

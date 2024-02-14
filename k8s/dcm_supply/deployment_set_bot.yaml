@@ -7,10 +7,10 @@ spec:
     spec:
       containers:
       - name: bot
-        args: ["src.runway.main"]
+        args: ["src.dcm_supply.main"]
         env:
         - name: DISCORD_BOT_TOKEN
           valueFrom:
             secretKeyRef:
               name: discord-bots-secret
-              key: DISCORD_BOT_TOKEN_RUNWAY
+              key: DISCORD_BOT_TOKEN_DCM_SUPPLY

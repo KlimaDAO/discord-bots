@@ -1,11 +1,13 @@
 import os
+import traceback
 
 import discord
 from discord.ext import commands
 import json
 from web3 import Web3
 
-from .constants import KLIMA_PROTOCOL_SUBGRAPH
+from .constants import KLIMA_PROTOCOL_SUBGRAPH, POLYGON_DIGITAL_CARBON_SUBGRAPH, \
+                       AVG_BLOCK_SECS, DISTRIBUTOR_ADDRESS
 
 PROVIDER_POLYGON_URL = os.environ['WEB3_PROVIDER_POLYGON_URL']
 PROVIDER_ETH_URL = os.environ['WEB3_PROVIDER_ETH_URL']
@@ -95,6 +97,16 @@ def get_last_metric(sg):
     return last_metric
 
 
+def get_last_carbon(sg):
+    kpm = sg.load_subgraph(POLYGON_DIGITAL_CARBON_SUBGRAPH)
+
+    last_carbon = kpm.Query.epoches(
+        orderBy=kpm.Epoch.epoch, orderDirection='desc', first=1
+    )
+
+    return last_carbon
+
+
 def prettify_number(number):
     num = float('{:.3g}'.format(number))
     magnitude = 0
@@ -102,3 +114,33 @@ def prettify_number(number):
         magnitude += 1
         num /= 1000.0
     return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+
+
+def get_staking_params(web3):
+    distributor_contract = web3.eth.contract(
+        address=DISTRIBUTOR_ADDRESS,
+        abi=load_abi('distributor.json')
+    )
+
+    try:
+        epoch_length = distributor_contract.functions.epochLength().call()
+
+        info = distributor_contract.functions.info(0).call()
+        reward_rate = info[0]
+        staking_reward = distributor_contract.functions.nextRewardAt(reward_rate).call()
+
+        return staking_reward, epoch_length
+    except ValueError:
+        traceback.print_exc()
+        return None
+
+
+def get_rebases_per_day(blocks_per_rebase):
+    '''
+    Calculates the average number of rebases per day based on the average
+    block production time for the previous 1 million blocks
+    '''
+
+    secs_per_rebase = blocks_per_rebase * AVG_BLOCK_SECS
+
+    return 24 / (secs_per_rebase / 60 / 60)

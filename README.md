@@ -15,7 +15,7 @@ src/
 Each bot requires a separate application to be defined in the Discord Developer Portal. For each, do the following:
 
 1. Access the Discord developer portal: <https://discord.com/developers/applications>
-1. Create a new application: enter in the name of the bot (e.g. next-rebase)
+1. Create a new application: enter in the name of the bot (e.g. next-rewards)
 1. Create a bot: Click on "bot" in the sidebar and define a bot with the corresponding username.
    1. Check the "presence" and "server members" intents.
 1. Authorise the bot:
