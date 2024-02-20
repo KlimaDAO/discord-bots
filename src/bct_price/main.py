@@ -48,7 +48,7 @@ async def update_info():
 
         success = await update_presence(
             client,
-            f'Supply: {prettify_number(supply)}'
+            f'Supply: {prettify_number(supply)}t'
         )
         if not success:
             return
