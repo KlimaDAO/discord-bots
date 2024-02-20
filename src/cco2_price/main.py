@@ -45,7 +45,8 @@ async def update_info():
         if not success:
             return
 
-        supply_text = f'Supply: {prettify_number(supply)}'
+        # Since CCO2 is denominated in kgs, divide by 1000 to get total tonnage
+        supply_text = f'Supply: {prettify_number(supply/1e3)}t'
         success = await update_presence(
             client,
             supply_text
