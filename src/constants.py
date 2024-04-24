@@ -1,3 +1,5 @@
+import os
+
 from web3 import Web3
 
 # Hard-coded since Polygon block times have stabilized
@@ -46,7 +48,24 @@ SKLIMA_ADDRESS = Web3.to_checksum_address('0xb0C22d8D350C67420f06F48936654f567C7
 DAO_WALLET_ADDRESS = Web3.to_checksum_address('0x65a5076c0ba74e5f3e069995dc3dab9d197d995c')
 
 # Subgraphs
-KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
-KLIMA_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-bridged-carbon'
-KLIMA_BONDS_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-bonds'
-POLYGON_DIGITAL_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-digital-carbon'
+GRAPH_API_KEY = os.environ.get('GRAPH_API_KEY')
+GRAPH_BASE_URL = f'https://gateway-arbitrum.network.thegraph.com/api/{GRAPH_API_KEY}/subgraphs/id/'
+GRAPH_DEV_BASE_URL = 'https://api.studio.thegraph.com/query/71975/'
+GRAPH_VERSION_SUFFIX = '/version/latest'
+
+# TODO: upgrade all IDs to latest production versions once upgraded
+PROTOCOL_SUBGRAPH_ID = 'AiHH7a5AJwnn8zAuENy3586m82fgosUs2346LWKgxmTJ'
+CARBON_SUBGRAPH_ID = '9skh5pMQGRdyJcBe8PjWdDjLoYqoYTMLRDpFh6acSHUu'
+BONDS_SUBGRAPH_ID = 'D7bejmu4JQ9mnnQhhrs6b3iEL17nviNuLhN5RJkeUDFn'
+POLYGON_DIGITAL_CARBON_ID = 'ECLEwJKgujmiRCW1XbfbbUbpae2igeHa2KJ6BXNSWrZF'
+
+if os.environ.get('ENV') == 'production':
+    KLIMA_PROTOCOL_SUBGRAPH = GRAPH_BASE_URL + PROTOCOL_SUBGRAPH_ID
+    KLIMA_CARBON_SUBGRAPH = GRAPH_BASE_URL + CARBON_SUBGRAPH_ID
+    KLIMA_BONDS_SUBGRAPH = GRAPH_BASE_URL + BONDS_SUBGRAPH_ID
+    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + POLYGON_DIGITAL_CARBON_ID
+else:
+    KLIMA_PROTOCOL_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-protocol-metrics' + GRAPH_VERSION_SUFFIX
+    KLIMA_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-bridged-carbon' + GRAPH_VERSION_SUFFIX
+    KLIMA_BONDS_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-bonds' + GRAPH_VERSION_SUFFIX
+    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-digital-carbon' + GRAPH_VERSION_SUFFIX
