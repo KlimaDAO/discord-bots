@@ -39,6 +39,7 @@ jobs:
     needs: build-docker
     env:
       AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+      GRAPH_API_KEY: ${{ secrets.GRAPH_API_KEY }}
       POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
       WEB3_PROVIDER_ETH_URL: ${{ secrets.WEB3_PROVIDER_ETH_URL }}
       WEB3_PROVIDER_POLYGON_URL: ${{ secrets.WEB3_PROVIDER_POLYGON_URL }}

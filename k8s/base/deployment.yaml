@@ -35,3 +35,8 @@ spec:
             secretKeyRef:
               name: discord-bots-secret
               key: POLYGONSCAN_API_KEY
+        - name: GRAPH_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: discord-bots-secret
+              key: GRAPH_API_KEY
