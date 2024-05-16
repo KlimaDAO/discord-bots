@@ -57,7 +57,7 @@ if os.environ.get('ENV') == 'production':
     KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
     KLIMA_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-bridged-carbon'
     KLIMA_BONDS_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-bonds'
-    POLYGON_DIGITAL_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-digital-carbon'
+    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + 'QmSKcyCG2B2SavJLsJjjSWLPrfUqt7BMRfLSRSTpk6WZAt'
 else:
     KLIMA_PROTOCOL_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-protocol-metrics' + GRAPH_VERSION_SUFFIX
     KLIMA_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-bridged-carbon' + GRAPH_VERSION_SUFFIX
