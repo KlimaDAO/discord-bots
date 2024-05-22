@@ -63,4 +63,5 @@ else:
     KLIMA_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-bridged-carbon' + GRAPH_VERSION_SUFFIX
     KLIMA_BONDS_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-bonds' + GRAPH_VERSION_SUFFIX
     # TODO: remove temporary production query from dev setup
-    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + 'QmSKcyCG2B2SavJLsJjjSWLPrfUqt7BMRfLSRSTpk6WZAt'  # GRAPH_DEV_BASE_URL + 'staging-polygon-digital-carbon' + GRAPH_VERSION_SUFFIX
+    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + 'QmSKcyCG2B2SavJLsJjjSWLPrfUqt7BMRfLSRSTpk6WZAt'
+    # GRAPH_DEV_BASE_URL + 'staging-polygon-digital-carbon' + GRAPH_VERSION_SUFFIX
