@@ -53,15 +53,24 @@ GRAPH_BASE_URL = f'https://gateway-arbitrum.network.thegraph.com/api/{GRAPH_API_
 GRAPH_DEV_BASE_URL = 'https://api.studio.thegraph.com/query/71975/'
 GRAPH_VERSION_SUFFIX = '/version/latest'
 
+# TODO: upgrade all IDs to latest production versions once upgraded
+PROTOCOL_SUBGRAPH_ID = '4U4wYigWGmGQobFb5sQxvTsRqSz2u2kAN6zHXBF5yTP6'
+CARBON_SUBGRAPH_ID = 'DAd5YXDcVuHtYYAcqViqWDqE1hSRCrVULvcBWQHojCxD'
+BONDS_SUBGRAPH_ID = '2PYZkFXdj62yBFDqLjzw17bSX5uMqojX26v22UfwaL1M'
+POLYGON_DIGITAL_CARBON_ID = '5WCNJmuBbejEU3jqL5Hswde5Vkn2yrQWfeJrhUSRGp8J'
+
 if os.environ.get('ENV') == 'production':
     KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
     KLIMA_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-bridged-carbon'
     KLIMA_BONDS_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-bonds'
-    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + 'QmSKcyCG2B2SavJLsJjjSWLPrfUqt7BMRfLSRSTpk6WZAt'
+    POLYGON_DIGITAL_CARBON_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/polygon-digital-carbon'
 else:
-    KLIMA_PROTOCOL_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-protocol-metrics' + GRAPH_VERSION_SUFFIX
-    KLIMA_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-bridged-carbon' + GRAPH_VERSION_SUFFIX
-    KLIMA_BONDS_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-bonds' + GRAPH_VERSION_SUFFIX
-    # TODO: remove temporary production query from dev setup
-    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + '5WCNJmuBbejEU3jqL5Hswde5Vkn2yrQWfeJrhUSRGp8J'
-    # GRAPH_DEV_BASE_URL + 'staging-polygon-digital-carbon' + GRAPH_VERSION_SUFFIX
+    KLIMA_PROTOCOL_SUBGRAPH = GRAPH_BASE_URL + PROTOCOL_SUBGRAPH_ID
+    KLIMA_CARBON_SUBGRAPH = GRAPH_BASE_URL + CARBON_SUBGRAPH_ID
+    KLIMA_BONDS_SUBGRAPH = GRAPH_BASE_URL + BONDS_SUBGRAPH_ID
+    POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_BASE_URL + POLYGON_DIGITAL_CARBON_ID
+
+    # KLIMA_PROTOCOL_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-protocol-metrics' + GRAPH_VERSION_SUFFIX
+    # KLIMA_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-bridged-carbon' + GRAPH_VERSION_SUFFIX
+    # KLIMA_BONDS_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-klimadao-bonds' + GRAPH_VERSION_SUFFIX
+    # POLYGON_DIGITAL_CARBON_SUBGRAPH = GRAPH_DEV_BASE_URL + 'staging-polygon-digital-carbon' + GRAPH_VERSION_SUFFIX
