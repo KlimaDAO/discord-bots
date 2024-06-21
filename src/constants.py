@@ -50,10 +50,9 @@ DAO_WALLET_ADDRESS = Web3.to_checksum_address('0x65a5076c0ba74e5f3e069995dc3dab9
 # Subgraphs
 GRAPH_API_KEY = os.environ.get('GRAPH_API_KEY')
 GRAPH_BASE_URL = f'https://gateway-arbitrum.network.thegraph.com/api/{GRAPH_API_KEY}/subgraphs/id/'
-GRAPH_DEV_BASE_URL = 'https://api.studio.thegraph.com/query/71975/'
+GRAPH_DEV_BASE_URL = 'https://api.studio.thegraph.com/query/78559/'
 GRAPH_VERSION_SUFFIX = '/version/latest'
 
-# TODO: upgrade all IDs to latest production versions once upgraded
 PROTOCOL_SUBGRAPH_ID = 'AiHH7a5AJwnn8zAuENy3586m82fgosUs2346LWKgxmTJ'
 CARBON_SUBGRAPH_ID = '9skh5pMQGRdyJcBe8PjWdDjLoYqoYTMLRDpFh6acSHUu'
 BONDS_SUBGRAPH_ID = 'D7bejmu4JQ9mnnQhhrs6b3iEL17nviNuLhN5RJkeUDFn'
