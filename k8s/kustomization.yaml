@@ -4,23 +4,13 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ./bct_price
-  # TODO: fix interactions for bond discount bot
-  # - ./bond_alerts
-  - ./index
   - ./klima_price
   - ./mco2_price
   - ./nbo_price
   - ./nct_price
-  - ./next_rewards
   - ./staking_rewards
-  - ./supply_cc
-  - ./treasury_carbon
-  - ./treasury_market
   - ./ubo_price
   - ./retirement_fee_info
-  - ./dao_fee
-  - ./dao_balance
-  - ./dcm_supply
   - ./cco2_price
 
 namespace: discord-bots
