@@ -13,7 +13,7 @@ from ..utils import get_discord_client, \
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
 # Initialized Discord client
-client = get_discord_client()
+client = get_discord_client(presences_intent=True)
 
 sg = Subgrounds()
 
@@ -95,8 +95,7 @@ async def update_info():
         total_text = 'in the last 7d'
         success = await update_presence(
             client,
-            total_text,
-            type='playing'
+            total_text
         )
         if not success:
             return

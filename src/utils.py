@@ -81,7 +81,8 @@ async def update_presence(client, text, type='watching'):
             )
         )
         return True
-    except discord.errors.HTTPException:
+    except discord.errors.HTTPException as e:
+        print("Error updating presence: ", e)
         return False
 
 
