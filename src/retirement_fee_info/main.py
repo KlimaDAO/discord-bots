@@ -13,7 +13,7 @@ from ..utils import get_discord_client, \
 BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
 
 # Initialized Discord client
-client = get_discord_client(presences_intent=True)
+client = get_discord_client()
 
 sg = Subgrounds()
 
@@ -85,6 +85,7 @@ async def on_ready():
 async def update_info():
     offset_amount, offset = get_info()
 
+    print(offset_amount, offset)
     if offset_amount and offset is not None:
 
         offset_text = f'Retired {offset}: {prettify_number(offset_amount)}t'
