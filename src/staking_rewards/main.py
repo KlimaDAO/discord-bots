@@ -2,7 +2,7 @@ import os
 import math
 import traceback
 
-from web3.middleware import geth_poa_middleware
+from web3.middleware import ExtraDataToPOAMiddleware
 from discord.ext import tasks
 
 from ..constants import SKLIMA_ADDRESS
@@ -18,7 +18,7 @@ client = get_discord_client()
 
 # Initialize web3
 web3 = get_polygon_web3()
-web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+web3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
 
 # Load ABIs
 SKLIMA_ABI = load_abi('sklima.json')
