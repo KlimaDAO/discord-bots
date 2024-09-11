@@ -85,6 +85,7 @@ async def on_ready():
 async def update_info():
     offset_amount, offset = get_info()
 
+    print(offset_amount, offset)
     if offset_amount and offset is not None:
 
         offset_text = f'Retired {offset}: {prettify_number(offset_amount)}t'
@@ -95,8 +96,7 @@ async def update_info():
         total_text = 'in the last 7d'
         success = await update_presence(
             client,
-            total_text,
-            type='playing'
+            total_text
         )
         if not success:
             return
