@@ -11,6 +11,7 @@ from .constants import KLIMA_PROTOCOL_SUBGRAPH, POLYGON_DIGITAL_CARBON_SUBGRAPH,
 
 PROVIDER_POLYGON_URL = os.environ['WEB3_PROVIDER_POLYGON_URL']
 PROVIDER_ETH_URL = os.environ['WEB3_PROVIDER_ETH_URL']
+PROVIDER_BASE_URL = os.environ['WEB3_PROVIDER_BASE_URL']
 
 
 def get_polygon_web3():
@@ -27,6 +28,14 @@ def get_eth_web3():
     assert web3_eth.is_connected()
 
     return web3_eth
+
+
+def get_base_web3():
+    web3_base = Web3(Web3.HTTPProvider(PROVIDER_BASE_URL))
+
+    assert web3_base.is_connected()
+
+    return web3_base
 
 
 def get_discord_client(members_intent=False, presences_intent=False, message_content_intent=False):

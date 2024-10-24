@@ -1,5 +1,8 @@
+from .aerodrome_price import AerodromePrice
 from .utils import load_abi
-from .constants import KLIMA_USDC_POOL, USDC_DECIMALS, KLIMA_DECIMALS
+from .constants import KLIMA_USDC_POOL, USDC_DECIMALS, BASE_USDC_DECIMALS, KLIMA_DECIMALS, \
+                       KLIMA_BASE_ADDRESS, USDC_BASE_ADDRESS, \
+                       AERO_KLIMA_WETH_POOL_ADDRESS, AERO_WETH_USDC_POOL_ADDRESS
 
 uni_v2_abi = load_abi('uni_v2_pool.json')
 
@@ -29,6 +32,24 @@ def klima_usdc_price(web3):
         web3, KLIMA_USDC_POOL,
         USDC_DECIMALS - KLIMA_DECIMALS
     )
+
+
+def aero_klima_usdc_price(web3):
+    # Initialize with Base RPC URL
+    aero_price = AerodromePrice()
+
+    klima_weth_price = aero_price.get_spot_price(
+        KLIMA_BASE_ADDRESS,
+        AERO_KLIMA_WETH_POOL_ADDRESS,
+        token_in_decimals=KLIMA_DECIMALS
+    )
+    weth_usdc_price = aero_price.get_spot_price(
+        USDC_BASE_ADDRESS,
+        AERO_WETH_USDC_POOL_ADDRESS,
+        token_in_decimals=BASE_USDC_DECIMALS
+    )
+
+    return klima_weth_price / weth_usdc_price
 
 
 def token_supply(web3, token_address, abi, decimals=None):
