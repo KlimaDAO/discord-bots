@@ -75,6 +75,12 @@ These variables must also be defined, and will be used to replace variables in t
 - `DISCORD_BOT_TOKEN_STAKING_REWARDS`
 - `DISCORD_BOT_TOKEN_CCO2_PRICE`
 
+**NOTE: in order for environment variables defined as GitHub Actions Secrets/Variables to be propagated properly from GitHub Actions into the deployed Docker containers, they must be mapped in several places:**
+1. Into the build environment via the `.github/workflows/deploy.yaml` file `env` section of the `Deploy` step
+1. Into the k8s build via `k8s/secret.properties.template`
+1. Into the actual k8s secret via `k8s/base/deployment.yaml` or the corresponding bot-specific `deployment_set_<bot_name>.yaml` file in the appropriate bot-specific directory under `k8s`
+
+
 #### Digital Ocean App Platform
 
 The above environment variables are used in the Digital Ocean App Platform environment. They are injected into the `app-spec.yml` file for the following reasons:
