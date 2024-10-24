@@ -2,7 +2,7 @@ import os
 
 from discord.ext import tasks
 
-from ..contract_info import klima_usdc_price, token_supply
+from ..contract_info import aero_klima_usdc_price, token_supply
 from ..constants import KLIMA_ADDRESS, KLIMA_DECIMALS
 from ..utils import get_discord_client, \
     get_polygon_web3, load_abi, \
@@ -20,7 +20,7 @@ klima_abi = load_abi('erc20_token.json')
 
 
 def get_info():
-    klima_price = klima_usdc_price(web3)
+    klima_price = aero_klima_usdc_price(web3)
     supply = token_supply(web3, KLIMA_ADDRESS, klima_abi, KLIMA_DECIMALS)
 
     return klima_price, supply
