@@ -30,6 +30,11 @@ spec:
             secretKeyRef:
               name: discord-bots-secret
               key: WEB3_PROVIDER_POLYGON_URL
+        - name: WEB3_PROVIDER_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: discord-bots-secret
+              key: WEB3_PROVIDER_BASE_URL
         - name: POLYGONSCAN_API_KEY
           valueFrom:
             secretKeyRef:
