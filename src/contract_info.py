@@ -34,6 +34,17 @@ def klima_usdc_price(web3):
     )
 
 
+def aero_weth_usdc_price():
+    # Initialize with Base RPC URL
+    aero_price = AerodromePrice()
+
+    return aero_price.get_spot_price(
+        USDC_BASE_ADDRESS,
+        AERO_WETH_USDC_POOL_ADDRESS,
+        token_in_decimals=BASE_USDC_DECIMALS
+    )
+
+
 def aero_klima_usdc_price(web3):
     # Initialize with Base RPC URL
     aero_price = AerodromePrice()

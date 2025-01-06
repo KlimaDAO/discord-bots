@@ -65,6 +65,8 @@ jobs:
       DISCORD_BOT_TOKEN_MOSS_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_MOSS_PRICE }}
       DISCORD_BOT_TOKEN_NBO_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_NBO_PRICE }}
       DISCORD_BOT_TOKEN_NCT_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_NCT_PRICE }}
+      DISCORD_BOT_TOKEN_MANIC_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_MANIC_PRICE }}
+      DISCORD_BOT_TOKEN_WOOD_PRICE: ${{ secrets.DISCORD_BOT_TOKEN_WOOD_PRICE }}
       GITHUB_SHA: ${{ github.sha }}
       DOCKER_IMAGE: registry.digitalocean.com/${{ secrets.DIGITALOCEAN_CONTAINER_REPO }}/discord-bots:${{ github.sha }}
     steps:
