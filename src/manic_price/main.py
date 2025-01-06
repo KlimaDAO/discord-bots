@@ -20,11 +20,12 @@ manic_abi = load_abi('erc20_token.json')
 
 
 def get_info():
-    weth_usdc_price = aero_weth_usdc_price()
-    manic_usdc_price = uni_v2_pool_price(web3, MANIC_WETH_POOL_ADDRESS, MANIC_DECIMALS, base_price=weth_usdc_price)
+    weth_usdc_price = 1 / aero_weth_usdc_price()
+    print(weth_usdc_price)
+    manic_weth_price = 1 / (uni_v2_pool_price(web3, MANIC_WETH_POOL_ADDRESS, MANIC_DECIMALS) / 10**18)
     supply = token_supply(web3, MANIC_ADDRESS, manic_abi, MANIC_DECIMALS)
 
-    return manic_usdc_price, supply
+    return manic_weth_price * weth_usdc_price, supply
 
 
 @client.event
