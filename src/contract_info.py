@@ -5,6 +5,7 @@ from .constants import KLIMA_USDC_POOL, USDC_DECIMALS, BASE_USDC_DECIMALS, KLIMA
                        AERO_KLIMA_WETH_POOL_ADDRESS, AERO_WETH_USDC_POOL_ADDRESS
 
 uni_v2_abi = load_abi('uni_v2_pool.json')
+uni_v3_abi = load_abi('uni_v3_pool.json')
 
 
 def uni_v2_pool_price(web3, pool_address, decimals, base_price=1):
@@ -24,6 +25,36 @@ def uni_v2_pool_price(web3, pool_address, decimals, base_price=1):
 
         return token_price
     except Exception:
+        return None
+
+
+def uni_v3_pool_price(web3, pool_address, decimals0=18, decimals1=18, base_price=1):
+    '''
+    Calculate the price of a UniV3 liquidity pool, using the provided
+    pool address, decimals of the first token, and multiplied by
+    base_price if provided for computing multiple pool hops.
+    '''
+    pool_contract = web3.eth.contract(
+        address=pool_address,
+        abi=uni_v3_abi
+    )
+
+    try:
+        # Get slot0 data
+        slot0_data = pool_contract.functions.slot0().call()
+        sqrt_price_x96 = slot0_data[0]
+
+        # Calculate price from sqrtPriceX96
+        # Price = (sqrtPriceX96 / 2^96) ^ 2
+        price_1_0 = (sqrt_price_x96 / (2**96)) ** 2
+
+        # Adjust for decimals
+        token_price = price_1_0 * (10 ** decimals0) / (10 ** decimals1)
+
+        return token_price * base_price
+
+    except Exception as e:
+        print(e)
         return None
 
 

@@ -2,8 +2,8 @@ import os
 
 from discord.ext import tasks
 
-from ..contract_info import aero_weth_usdc_price, token_supply, uni_v2_pool_price
-from ..constants import MANIC_ADDRESS, MANIC_DECIMALS, MANIC_WETH_POOL_ADDRESS
+from ..contract_info import aero_weth_usdc_price, token_supply, uni_v3_pool_price
+from ..constants import WOOD_ADDRESS, WOOD_DECIMALS, WOOD_WETH_POOL_ADDRESS
 from ..utils import get_discord_client, \
     get_base_web3, load_abi, \
     prettify_number, update_nickname, update_presence
@@ -16,15 +16,19 @@ client = get_discord_client()
 # Initialize web3
 web3 = get_base_web3()
 
-manic_abi = load_abi('erc20_token.json')
+wood_abi = load_abi('erc20_token.json')
 
 
 def get_info():
     weth_usdc_price = 1 / aero_weth_usdc_price()
-    manic_weth_price = 1 / (uni_v2_pool_price(web3, MANIC_WETH_POOL_ADDRESS, MANIC_DECIMALS) / 10**18)
-    supply = token_supply(web3, MANIC_ADDRESS, manic_abi, MANIC_DECIMALS)
+    wood_weth_price = uni_v3_pool_price(web3, WOOD_WETH_POOL_ADDRESS, WOOD_DECIMALS)
+    supply = token_supply(web3, WOOD_ADDRESS, wood_abi, WOOD_DECIMALS)
 
-    return manic_weth_price * weth_usdc_price, supply
+    print(wood_weth_price)
+    print(weth_usdc_price)
+    print(supply)
+
+    return wood_weth_price * weth_usdc_price, supply
 
 
 @client.event
@@ -46,7 +50,7 @@ async def update_info():
         if not success:
             return
 
-        success = await update_presence(client, f'MANIC Price: ${price:,.4f}')
+        success = await update_presence(client, f'WOOD Price: ${price:,.8f}')
         if not success:
             return
 
