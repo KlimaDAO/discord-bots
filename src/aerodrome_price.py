@@ -22,7 +22,7 @@ class AerodromePrice:
 
         Args:
             token_in: Address of input token
-            token_out: Address of output token
+            pool_address: Address of pool
             token_in_decimals: Decimals of input token
             token_out_decimals: Decimals of output token
 
