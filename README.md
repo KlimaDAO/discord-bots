@@ -74,6 +74,9 @@ These variables must also be defined, and will be used to replace variables in t
 - `DISCORD_BOT_TOKEN_MCO2_PRICE`
 - `DISCORD_BOT_TOKEN_STAKING_REWARDS`
 - `DISCORD_BOT_TOKEN_CCO2_PRICE`
+- `DISCORD_BOT_TOKEN_MANIC_PRICE`
+- `DISCORD_BOT_TOKEN_WOOD_PRICE`
+
 
 **NOTE: in order for environment variables defined as GitHub Actions Secrets/Variables to be propagated properly from GitHub Actions into the deployed Docker containers, they must be mapped in several places:**
 1. Into the build environment via the `.github/workflows/deploy.yaml` file `env` section of the `Deploy` step

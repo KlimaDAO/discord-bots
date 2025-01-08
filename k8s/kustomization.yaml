@@ -12,6 +12,8 @@ resources:
   - ./ubo_price
   - ./retirement_fee_info
   - ./cco2_price
+  - ./manic_price
+  - ./wood_price
 
 namespace: discord-bots
 
