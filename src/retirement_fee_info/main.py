@@ -36,9 +36,7 @@ def get_info():
     current_pool = pool_names[counter]
 
     ts = get_days_ago_timestamp(7)
-    w_retired_amount = get_retirement_fees(sg,
-                                          ts,
-                                          current_pool)
+    w_retired_amount = get_retirement_fees(sg, ts, current_pool)
 
     counter += 1
     if counter == len(pool_names):
@@ -73,7 +71,9 @@ def get_retirement_fees(sg, timestamp, pool):
         if retirement_df.size == 0:
             return 0, 0, 0
 
-        retirement_df['dailyKlimaRetireSnapshots_pool'] = retirement_df.dailyKlimaRetireSnapshots_pool.apply(lambda x: Web3.to_checksum_address(x))
+        retirement_df['dailyKlimaRetireSnapshots_pool'] = retirement_df.dailyKlimaRetireSnapshots_pool.apply(
+            lambda x: Web3.to_checksum_address(x)
+        )
 
         w_pool_amount = retirement_df.loc[
             retirement_df['dailyKlimaRetireSnapshots_pool'] == pool_addresses[pool],
@@ -99,8 +99,6 @@ async def on_ready():
 @tasks.loop(seconds=120)
 async def update_info():
     pool_amount, pool = get_info()
-
-    print(pool_amount, pool)
 
     if pool_amount and pool is not None:
 
