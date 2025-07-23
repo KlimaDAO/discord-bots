@@ -34,7 +34,8 @@ jobs:
         run: touch $GITHUB_WORKSPACE/k8s/secret.properties
       - name: Kustomize
         run: kustomize build k8s > /tmp/kustomized.yaml
-      - uses: azure/k8s-lint@v2.0
+      - uses: azure/k8s-lint@v3
         with:
           manifests: |
             /tmp/kustomized.yaml
+          kubeconformOpts: -summary
