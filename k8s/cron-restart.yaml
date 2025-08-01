@@ -17,8 +17,7 @@ metadata:
 rules:
   - apiGroups: ["apps", "extensions"]
     resources: ["deployments"]
-    resourceNames: ["*"]
-    verbs: ["get", "patch", "list", "watch"] # "list" and "watch" are only needed
+    verbs: ["get", "patch", "list", "watch", "update"] # "list" and "watch" are only needed
                                              # if you want to use `rollout status`
 ---
 # bind the role to the service account

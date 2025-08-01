@@ -14,6 +14,9 @@ resources:
   - ./manic_price
   - ./wood_price
 
+  # CronJob that periodically restarts all the Pods to avoid intermittent failures locking them up
+  - cron-restart.yaml
+
 namespace: discord-bots
 
 secretGenerator:
